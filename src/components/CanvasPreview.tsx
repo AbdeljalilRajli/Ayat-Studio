@@ -179,6 +179,88 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
                   />
                 </div>
               )}
+              
+              {borderType === 'andalusian' && (
+                <div className="absolute inset-8 pointer-events-none">
+                  {/* Main border */}
+                  <div
+                    className="absolute inset-0 border-2"
+                    style={{ borderColor: currentTextColor, opacity: 0.5 }}
+                  />
+                  {/* Horseshoe arches - Andalusian style */}
+                  <div className="absolute -top-6 left-1/4 -translate-x-1/2 w-16 h-10" style={{ borderTop: `2px solid ${currentTextColor}`, borderLeft: `2px solid ${currentTextColor}`, borderRight: `2px solid ${currentTextColor}`, borderRadius: '50% 50% 0 0', opacity: 0.6 }} />
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-16 h-10" style={{ borderTop: `2px solid ${currentTextColor}`, borderLeft: `2px solid ${currentTextColor}`, borderRight: `2px solid ${currentTextColor}`, borderRadius: '50% 50% 0 0', opacity: 0.6 }} />
+                  <div className="absolute -top-6 left-3/4 -translate-x-1/2 w-16 h-10" style={{ borderTop: `2px solid ${currentTextColor}`, borderLeft: `2px solid ${currentTextColor}`, borderRight: `2px solid ${currentTextColor}`, borderRadius: '50% 50% 0 0', opacity: 0.6 }} />
+                  {/* Decorative corner elements */}
+                  <div className="absolute -top-2 -left-2 w-10 h-10" style={{ borderTop: `3px solid ${currentTextColor}`, borderLeft: `3px solid ${currentTextColor}`, opacity: 0.7 }} />
+                  <div className="absolute -top-2 -right-2 w-10 h-10" style={{ borderTop: `3px solid ${currentTextColor}`, borderRight: `3px solid ${currentTextColor}`, opacity: 0.7 }} />
+                  <div className="absolute -bottom-2 -left-2 w-10 h-10" style={{ borderBottom: `3px solid ${currentTextColor}`, borderLeft: `3px solid ${currentTextColor}`, opacity: 0.7 }} />
+                  <div className="absolute -bottom-2 -right-2 w-10 h-10" style={{ borderBottom: `3px solid ${currentTextColor}`, borderRight: `3px solid ${currentTextColor}`, opacity: 0.7 }} />
+                </div>
+              )}
+              
+              {borderType === 'moroccan' && (
+                <div className="absolute inset-8 pointer-events-none">
+                  {/* Main border with Moroccan zellige style */}
+                  <div
+                    className="absolute inset-0 border-[3px]"
+                    style={{ borderColor: currentTextColor, opacity: 0.6 }}
+                  />
+                  {/* Inner border for tile effect */}
+                  <div
+                    className="absolute inset-2 border-2"
+                    style={{ borderColor: currentTextColor, opacity: 0.4 }}
+                  />
+                  {/* Diamond shapes at corners - Moroccan star pattern */}
+                  <div className="absolute -top-3 -left-3 w-6 h-6 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.8 }} />
+                  <div className="absolute -top-3 -right-3 w-6 h-6 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.8 }} />
+                  <div className="absolute -bottom-3 -left-3 w-6 h-6 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.8 }} />
+                  <div className="absolute -bottom-3 -right-3 w-6 h-6 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.8 }} />
+                  {/* Center decorations */}
+                  <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-0 h-0" style={{ borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderRight: `6px solid ${currentTextColor}`, opacity: 0.7 }} />
+                  <div className="absolute top-1/2 -right-1 -translate-y-1/2 w-0 h-0" style={{ borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: `6px solid ${currentTextColor}`, opacity: 0.7 }} />
+                </div>
+              )}
+              
+              {borderType === 'islamic-lattice' && (
+                <div className="absolute inset-8 pointer-events-none">
+                  {/* Main border */}
+                  <div
+                    className="absolute inset-0 border-2"
+                    style={{ borderColor: currentTextColor, opacity: 0.5 }}
+                  />
+                  {/* Eight-pointed star corners */}
+                  <div className="absolute -top-4 -left-4">
+                    <div className="relative w-8 h-8">
+                      <div className="absolute inset-0 rotate-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                      <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                    </div>
+                  </div>
+                  <div className="absolute -top-4 -right-4">
+                    <div className="relative w-8 h-8">
+                      <div className="absolute inset-0 rotate-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                      <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                    </div>
+                  </div>
+                  <div className="absolute -bottom-4 -left-4">
+                    <div className="relative w-8 h-8">
+                      <div className="absolute inset-0 rotate-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                      <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                    </div>
+                  </div>
+                  <div className="absolute -bottom-4 -right-4">
+                    <div className="relative w-8 h-8">
+                      <div className="absolute inset-0 rotate-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                      <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                    </div>
+                  </div>
+                  {/* Interlacing lines at midpoints */}
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-12 h-4 border-t-2" style={{ borderColor: currentTextColor, opacity: 0.6 }} />
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-4 border-b-2" style={{ borderColor: currentTextColor, opacity: 0.6 }} />
+                  <div className="absolute top-1/2 -left-2 -translate-y-1/2 w-4 h-12 border-l-2" style={{ borderColor: currentTextColor, opacity: 0.6 }} />
+                  <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-4 h-12 border-r-2" style={{ borderColor: currentTextColor, opacity: 0.6 }} />
+                </div>
+              )}
             </>
           )}
 
