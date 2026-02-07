@@ -1,6 +1,11 @@
 import { Upload, Download, Smartphone, Square, Monitor, Image as ImageIcon, Palette, Type, Frame, BookOpen } from 'lucide-react';
 import type { Verse } from '../data/verses';
 import type { Pattern } from '../data/patterns';
+import type { BorderType } from '../data/borders';
+import { borderTypes } from '../data/borders';
+import { ColorPicker } from './ColorPicker';
+
+type FontFamily = 'Amiri' | 'Lateef' | 'Scheherazade' | 'Reem Kufi' | 'Noto Naskh' | 'Cairo' | 'Tajawal' | 'Almarai' | 'Noto Sans Arabic' | 'DM Mono' | 'Ruwudu' | 'IBM Plex Sans Arabic';
 
 interface SidebarProps {
   verses: Verse[];
@@ -17,14 +22,14 @@ interface SidebarProps {
   onPatternOpacityChange: (opacity: number) => void;
   vignetteIntensity: number;
   onVignetteIntensityChange: (intensity: number) => void;
-  fontFamily: 'Amiri' | 'Lateef';
-  onFontFamilyChange: (family: 'Amiri' | 'Lateef') => void;
+  fontFamily: FontFamily;
+  onFontFamilyChange: (family: FontFamily) => void;
   fontSize: number;
   onFontSizeChange: (size: number) => void;
   textColor: 'gold' | 'white' | 'black';
   onTextColorChange: (color: 'gold' | 'white' | 'black') => void;
-  showFrame: boolean;
-  onShowFrameChange: (show: boolean) => void;
+  borderType: BorderType['id'];
+  onBorderTypeChange: (type: BorderType['id']) => void;
   showTranslation: boolean;
   onShowTranslationChange: (show: boolean) => void;
   onExport: (ratio: 'story' | 'square' | 'desktop') => void;
@@ -51,8 +56,8 @@ export function Sidebar({
   onFontSizeChange,
   textColor,
   onTextColorChange,
-  showFrame,
-  onShowFrameChange,
+  borderType,
+  onBorderTypeChange,
   showTranslation,
   onShowTranslationChange,
   onExport
@@ -139,15 +144,7 @@ export function Sidebar({
           {/* Solid Color */}
           <div className="space-y-2">
             <label className="block text-xs text-gray-400">Or Solid Color</label>
-            <div className="flex items-center gap-2">
-              <input
-                type="color"
-                value={backgroundColor}
-                onChange={(e) => onBackgroundColorChange(e.target.value)}
-                className="w-10 h-10 rounded cursor-pointer bg-transparent border-0"
-              />
-              <span className="text-sm text-gray-300 font-mono">{backgroundColor}</span>
-            </div>
+            <ColorPicker color={backgroundColor} onChange={onBackgroundColorChange} />
           </div>
         </section>
 
@@ -213,27 +210,47 @@ export function Sidebar({
           {/* Font Family */}
           <div className="space-y-2">
             <label className="block text-xs text-gray-400">Arabic Font</label>
-            <div className="flex gap-2">
-              <button
-                onClick={() => onFontFamilyChange('Amiri')}
-                className={`flex-1 py-2 px-3 rounded-lg text-sm transition-all ${
-                  fontFamily === 'Amiri'
-                    ? 'bg-[#d4af37]/20 border border-[#d4af37] text-[#d4af37]'
-                    : 'bg-slate-800/50 border border-[#d4af37]/30 text-gray-300 hover:bg-slate-800/70'
-                }`}
+            <select
+              value={fontFamily}
+              onChange={(e) => onFontFamilyChange(e.target.value as FontFamily)}
+              className="w-full p-2 rounded-lg bg-slate-800/50 border border-[#d4af37]/30 text-sm text-white focus:border-[#d4af37] focus:outline-none"
+            >
+              <option value="Amiri">Amiri (Classical)</option>
+              <option value="Lateef">Lateef (Elegant)</option>
+              <option value="Scheherazade">Scheherazade New (Traditional)</option>
+              <option value="Reem Kufi">Reem Kufi (Modern Kufic)</option>
+              <option value="Noto Naskh">Noto Naskh (Readable)</option>
+              <option value="Cairo">Cairo (Contemporary)</option>
+              <option value="Tajawal">Tajawal (Modern)</option>
+              <option value="Almarai">Almarai (Bold)</option>
+              <option value="Noto Sans Arabic">Noto Sans Arabic (Clean)</option>
+              <option value="DM Mono">DM Mono (Monospace)</option>
+              <option value="Ruwudu">Ruwudu (Calligraphy)</option>
+              <option value="IBM Plex Sans Arabic">IBM Plex Sans (Professional)</option>
+            </select>
+            {/* Font Preview */}
+            <div className="p-3 rounded-lg bg-slate-800/30 border border-[#d4af37]/10 text-center">
+              <p 
+                className="text-xl"
+                style={{ 
+                  direction: 'rtl',
+                  fontFamily: fontFamily === 'Amiri' ? "Amiri, serif" : 
+                             fontFamily === 'Lateef' ? "Lateef, cursive" :
+                             fontFamily === 'Scheherazade' ? "Scheherazade New, serif" :
+                             fontFamily === 'Reem Kufi' ? "Reem Kufi, sans-serif" :
+                             fontFamily === 'Noto Naskh' ? "Noto Naskh Arabic, serif" :
+                             fontFamily === 'Cairo' ? "Cairo, sans-serif" :
+                             fontFamily === 'Tajawal' ? "Tajawal, sans-serif" :
+                             fontFamily === 'Almarai' ? "Almarai, sans-serif" :
+                             fontFamily === 'Noto Sans Arabic' ? "Noto Sans Arabic, sans-serif" :
+                             fontFamily === 'DM Mono' ? "DM Mono, monospace" :
+                             fontFamily === 'Ruwudu' ? "Ruwudu, serif" :
+                             "IBM Plex Sans Arabic, sans-serif"
+                }}
               >
-                Amiri
-              </button>
-              <button
-                onClick={() => onFontFamilyChange('Lateef')}
-                className={`flex-1 py-2 px-3 rounded-lg text-sm transition-all ${
-                  fontFamily === 'Lateef'
-                    ? 'bg-[#d4af37]/20 border border-[#d4af37] text-[#d4af37]'
-                    : 'bg-slate-800/50 border border-[#d4af37]/30 text-gray-300 hover:bg-slate-800/70'
-                }`}
-              >
-                Lateef
-              </button>
+                بسم الله
+              </p>
+              <p className="text-xs text-gray-500 mt-1">{fontFamily}</p>
             </div>
           </div>
 
@@ -280,21 +297,23 @@ export function Sidebar({
           </div>
         </section>
 
-        {/* Frame Toggle */}
+        {/* Frame/Border Selection */}
         <section className="space-y-3">
           <h2 className="text-sm font-semibold text-[#d4af37] flex items-center gap-2">
             <Frame className="w-4 h-4" />
-            Frame
+            Border Style
           </h2>
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showFrame}
-              onChange={(e) => onShowFrameChange(e.target.checked)}
-              className="w-4 h-4 rounded border-[#d4af37]/30 bg-slate-800/50 text-[#d4af37] focus:ring-[#d4af37]"
-            />
-            <span className="text-sm text-gray-300">Show ornamental border</span>
-          </label>
+          <select
+            value={borderType}
+            onChange={(e) => onBorderTypeChange(e.target.value as BorderType['id'])}
+            className="w-full p-2 rounded-lg bg-slate-800/50 border border-[#d4af37]/30 text-sm text-white focus:border-[#d4af37] focus:outline-none"
+          >
+            {borderTypes.map((border) => (
+              <option key={border.id} value={border.id}>
+                {border.name} - {border.description}
+              </option>
+            ))}
+          </select>
           <label className="flex items-center gap-3 cursor-pointer">
             <input
               type="checkbox"

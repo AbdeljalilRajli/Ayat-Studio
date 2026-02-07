@@ -13,68 +13,63 @@ export const patterns: Pattern[] = [
   {
     id: "stars",
     name: "Islamic Stars",
-    css: `
-      radial-gradient(circle at 50% 50%, transparent 10%, rgba(0,0,0,0.1) 10.5%, transparent 11%) 0 0,
-      radial-gradient(circle at 0% 0%, transparent 10%, rgba(0,0,0,0.1) 10.5%, transparent 11%) 50px 50px,
-      radial-gradient(circle at 100% 100%, transparent 10%, rgba(0,0,0,0.1) 10.5%, transparent 11%) 50px 50px,
-      radial-gradient(circle at 0% 100%, transparent 10%, rgba(0,0,0,0.1) 10.5%, transparent 11%) 50px 50px,
-      radial-gradient(circle at 100% 0%, transparent 10%, rgba(0,0,0,0.1) 10.5%, transparent 11%) 50px 50px
-    `
+    css: `radial-gradient(circle at 50% 50%, rgba(212,175,55,0.3) 2px, transparent 3px),
+      radial-gradient(circle at 0% 0%, rgba(212,175,55,0.2) 1px, transparent 2px),
+      radial-gradient(circle at 100% 0%, rgba(212,175,55,0.2) 1px, transparent 2px),
+      radial-gradient(circle at 0% 100%, rgba(212,175,55,0.2) 1px, transparent 2px),
+      radial-gradient(circle at 100% 100%, rgba(212,175,55,0.2) 1px, transparent 2px)`
   },
   {
     id: "mosaic",
     name: "Geometric Mosaic",
-    css: `
-      linear-gradient(45deg, transparent 48%, rgba(0,0,0,0.08) 49%, rgba(0,0,0,0.08) 51%, transparent 52%) 0 0,
-      linear-gradient(-45deg, transparent 48%, rgba(0,0,0,0.08) 49%, rgba(0,0,0,0.08) 51%, transparent 52%) 0 0
-    `
+    css: `linear-gradient(45deg, rgba(212,175,55,0.15) 25%, transparent 25%, transparent 75%, rgba(212,175,55,0.15) 75%),
+      linear-gradient(-45deg, rgba(212,175,55,0.15) 25%, transparent 25%, transparent 75%, rgba(212,175,55,0.15) 75%)`
   },
   {
     id: "tessellation",
     name: "Tessellation",
-    css: `
-      conic-gradient(from 0deg at 50% 50%, transparent 45deg, rgba(0,0,0,0.1) 45deg, rgba(0,0,0,0.1) 90deg, transparent 90deg) 0 0,
-      conic-gradient(from 180deg at 50% 50%, transparent 45deg, rgba(0,0,0,0.1) 45deg, rgba(0,0,0,0.1) 90deg, transparent 90deg) 30px 30px
-    `
+    css: `repeating-linear-gradient(60deg, rgba(212,175,55,0.1) 0px, rgba(212,175,55,0.1) 2px, transparent 2px, transparent 40px),
+      repeating-linear-gradient(-60deg, rgba(212,175,55,0.1) 0px, rgba(212,175,55,0.1) 2px, transparent 2px, transparent 40px)`
   },
   {
     id: "hexagons",
     name: "Hexagon Grid",
-    css: `
-      linear-gradient(30deg, transparent 45%, rgba(0,0,0,0.07) 45%, rgba(0,0,0,0.07) 55%, transparent 55%) 0 0,
-      linear-gradient(-30deg, transparent 45%, rgba(0,0,0,0.07) 45%, rgba(0,0,0,0.07) 55%, transparent 55%) 0 0,
-      linear-gradient(90deg, transparent 45%, rgba(0,0,0,0.07) 45%, rgba(0,0,0,0.07) 55%, transparent 55%) 17px 30px
-    `
+    css: `repeating-linear-gradient(90deg, rgba(212,175,55,0.12) 0px, rgba(212,175,55,0.12) 1px, transparent 1px, transparent 60px),
+      repeating-linear-gradient(30deg, rgba(212,175,55,0.12) 0px, rgba(212,175,55,0.12) 1px, transparent 1px, transparent 60px),
+      repeating-linear-gradient(-30deg, rgba(212,175,55,0.12) 0px, rgba(212,175,55,0.12) 1px, transparent 1px, transparent 60px)`
   },
   {
     id: "arabesque",
-    name: "Arabesque",
-    css: `
-      repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.05) 10px, rgba(0,0,0,0.05) 20px),
-      repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(0,0,0,0.05) 10px, rgba(0,0,0,0.05) 20px)
-    `
+    name: "Arabesque Lines",
+    css: `repeating-linear-gradient(45deg, rgba(212,175,55,0.2) 0px, rgba(212,175,55,0.2) 2px, transparent 2px, transparent 20px),
+      repeating-linear-gradient(-45deg, rgba(212,175,55,0.2) 0px, rgba(212,175,55,0.2) 2px, transparent 2px, transparent 20px)`
   },
   {
     id: "grid",
     name: "Fine Grid",
-    css: `
-      linear-gradient(0deg, transparent 98%, rgba(0,0,0,0.1) 98%, rgba(0,0,0,0.1) 100%) 0 0,
-      linear-gradient(90deg, transparent 98%, rgba(0,0,0,0.1) 98%, rgba(0,0,0,0.1) 100%) 0 0
-    `
+    css: `linear-gradient(rgba(212,175,55,0.2) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212,175,55,0.2) 1px, transparent 1px)`
   },
   {
     id: "dots",
     name: "Subtle Dots",
-    css: `
-      radial-gradient(circle at 50% 50%, rgba(0,0,0,0.15) 2px, transparent 2.5px) 0 0
-    `
+    css: `radial-gradient(circle at center, rgba(212,175,55,0.4) 3px, transparent 4px)`
   },
   {
     id: "diamonds",
     name: "Diamond Weave",
-    css: `
-      linear-gradient(45deg, transparent 45%, rgba(0,0,0,0.1) 45%, rgba(0,0,0,0.1) 55%, transparent 55%) 0 0,
-      linear-gradient(135deg, transparent 45%, rgba(0,0,0,0.1) 45%, rgba(0,0,0,0.1) 55%, transparent 55%) 25px 25px
-    `
+    css: `linear-gradient(45deg, rgba(212,175,55,0.15) 25%, transparent 25%, transparent 75%, rgba(212,175,55,0.15) 75%),
+      linear-gradient(135deg, rgba(212,175,55,0.15) 25%, transparent 25%, transparent 75%, rgba(212,175,55,0.15) 75%)`
+  },
+  {
+    id: "islamic-geo",
+    name: "Islamic Geometric",
+    css: `repeating-conic-gradient(from 0deg at 50% 50%, rgba(212,175,55,0.15) 0deg 30deg, transparent 30deg 60deg),
+      repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg 60deg, rgba(212,175,55,0.15) 60deg 90deg)`
+  },
+  {
+    id: "circles",
+    name: "Concentric Circles",
+    css: `repeating-radial-gradient(circle at center, rgba(212,175,55,0.15) 0px, rgba(212,175,55,0.15) 2px, transparent 2px, transparent 30px)`
   }
 ];

@@ -1,7 +1,27 @@
 @import "tailwindcss";
 
-/* Google Fonts: Amiri & Lateef for Arabic calligraphy */
-@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Lateef:wght@200;300;400;500;600;700;800&display=swap');
+/* Google Fonts - Batch 1: Original 6 fonts */
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lateef:wght@200;300;400;500;600;700;800&display=swap');
+
+/* Google Fonts - Batch 2: More fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&family=Reem+Kufi:wght@400;500;600;700;800&family=Scheherazade+New:wght@400;500;600;700&display=swap');
+
+/* Google Fonts - Batch 3: Remaining fonts */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Tajawal:wght@200;300;400;500;700;800;900&family=Almarai:wght@300;400;700;800&display=swap');
+
+/* Google Fonts - Batch 4: Final fonts */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100;200;300;400;500;600;700;800;900&family=Ruwudu:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap');
+
+/* Islamic Design System Colors */
+:root {
+  --emerald-deep: #064e3b;
+  --emerald-light: #10b981;
+  --gold: #d4af37;
+  --gold-light: #f0e68c;
+  --slate-900: #0f172a;
+  --slate-800: #1e293b;
+  --cream: #fefce8;
+}
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -73,11 +93,51 @@ body {
 
 /* Arabic font families */
 .font-amiri {
-  font-family: 'Amiri', serif;
+  font-family: 'Amiri', 'Arial', sans-serif !important;
 }
 
 .font-lateef {
-  font-family: 'Lateef', cursive;
+  font-family: 'Lateef', cursive !important;
+}
+
+.font-scheherazade {
+  font-family: "Scheherazade New", serif !important;
+}
+
+.font-reem-kufi {
+  font-family: "Reem Kufi", sans-serif !important;
+}
+
+.font-noto-naskh {
+  font-family: "Noto Naskh Arabic", serif !important;
+}
+
+.font-cairo {
+  font-family: 'Cairo', sans-serif !important;
+}
+
+.font-tajawal {
+  font-family: 'Tajawal', sans-serif !important;
+}
+
+.font-almarai {
+  font-family: 'Almarai', sans-serif !important;
+}
+
+.font-noto-sans-arabic {
+  font-family: "Noto Sans Arabic", sans-serif !important;
+}
+
+.font-dm-mono {
+  font-family: 'DM Mono', monospace !important;
+}
+
+.font-ruwudu {
+  font-family: 'Ruwudu', serif !important;
+}
+
+.font-ibm-plex-sans-arabic {
+  font-family: "IBM Plex Sans Arabic", sans-serif !important;
 }
 
 /* Gold gradient text */

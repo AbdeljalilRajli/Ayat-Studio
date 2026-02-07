@@ -5,6 +5,8 @@ import { patterns } from './data/patterns';
 import { CanvasPreview, type CanvasSettings } from './components/CanvasPreview';
 import { Sidebar } from './components/Sidebar';
 
+type FontFamily = 'Amiri' | 'Lateef' | 'Scheherazade' | 'Reem Kufi' | 'Noto Naskh' | 'Cairo' | 'Tajawal' | 'Almarai' | 'Noto Sans Arabic' | 'DM Mono' | 'Ruwudu' | 'IBM Plex Sans Arabic';
+
 function App() {
   // State for all customization options
   const [selectedVerseId, setSelectedVerseId] = useState(verses[0].id);
@@ -13,10 +15,10 @@ function App() {
   const [selectedPatternId, setSelectedPatternId] = useState('none');
   const [patternOpacity, setPatternOpacity] = useState(30);
   const [vignetteIntensity, setVignetteIntensity] = useState(50);
-  const [fontFamily, setFontFamily] = useState<'Amiri' | 'Lateef'>('Amiri');
+  const [fontFamily, setFontFamily] = useState<FontFamily>('Amiri');
   const [fontSize, setFontSize] = useState(48);
   const [textColor, setTextColor] = useState<'gold' | 'white' | 'black'>('gold');
-  const [showFrame, setShowFrame] = useState(true);
+  const [borderType, setBorderType] = useState('ornate-corners');
   const [showTranslation, setShowTranslation] = useState(true);
   const [previewAspectRatio, setPreviewAspectRatio] = useState<'story' | 'square' | 'desktop'>('story');
   const [isExporting, setIsExporting] = useState(false);
@@ -38,7 +40,7 @@ function App() {
     fontFamily,
     fontSize,
     textColor,
-    showFrame,
+    borderType,
     showTranslation
   };
 
@@ -105,7 +107,7 @@ function App() {
             justify-content: center;
             padding: ${Math.floor(width * 0.06)}px;
           ">
-            ${showFrame ? `
+            ${borderType !== 'none' ? `
               <div style="
                 position: absolute;
                 inset: ${Math.floor(width * 0.04)}px;
@@ -119,7 +121,20 @@ function App() {
               </div>
             ` : ''}
             <div style="
-              font-family: ${fontFamily === 'Amiri' ? 'Amiri, serif' : 'Lateef, cursive'};
+              font-family: ${
+                fontFamily === 'Amiri' ? 'Amiri, serif' : 
+                fontFamily === 'Lateef' ? 'Lateef, cursive' :
+                fontFamily === 'Scheherazade' ? 'Scheherazade New, serif' :
+                fontFamily === 'Reem Kufi' ? 'Reem Kufi, sans-serif' :
+                fontFamily === 'Noto Naskh' ? 'Noto Naskh Arabic, serif' :
+                fontFamily === 'Cairo' ? 'Cairo, sans-serif' :
+                fontFamily === 'Tajawal' ? 'Tajawal, sans-serif' :
+                fontFamily === 'Almarai' ? 'Almarai, sans-serif' :
+                fontFamily === 'Noto Sans Arabic' ? 'Noto Sans Arabic, sans-serif' :
+                fontFamily === 'DM Mono' ? 'DM Mono, monospace' :
+                fontFamily === 'Ruwudu' ? 'Ruwudu, serif' :
+                'IBM Plex Sans Arabic, sans-serif'
+              };
               font-size: ${Math.floor(fontSize * (width / 400))}px;
               color: ${textColor === 'gold' ? '#d4af37' : textColor === 'white' ? '#ffffff' : '#000000'};
               text-shadow: ${textColor === 'white' ? '0 2px 8px rgba(0,0,0,0.5)' : '0 2px 8px rgba(0,0,0,0.3)'};
@@ -219,8 +234,8 @@ function App() {
         onFontSizeChange={setFontSize}
         textColor={textColor}
         onTextColorChange={setTextColor}
-        showFrame={showFrame}
-        onShowFrameChange={setShowFrame}
+        borderType={borderType}
+        onBorderTypeChange={setBorderType}
         showTranslation={showTranslation}
         onShowTranslationChange={setShowTranslation}
         onExport={handleExport}
@@ -237,7 +252,7 @@ function App() {
           </div>
 
           {/* Canvas Preview */}
-          <div className="relative z-10">
+          <div className="relative z-10 mb-16">
             <CanvasPreview
               ref={canvasRef}
               settings={canvasSettings}
@@ -246,7 +261,7 @@ function App() {
           </div>
 
           {/* Aspect Ratio Toggles */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-2">
             <button
               onClick={() => setPreviewAspectRatio('story')}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${

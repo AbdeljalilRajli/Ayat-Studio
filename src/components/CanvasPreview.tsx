@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import type { Verse } from '../data/verses';
 import type { Pattern } from '../data/patterns';
+import type { BorderType } from '../data/borders';
 
 export interface CanvasSettings {
   verse: Verse;
@@ -9,11 +10,11 @@ export interface CanvasSettings {
   pattern: Pattern;
   patternOpacity: number;
   vignetteIntensity: number;
-  fontFamily: 'Amiri' | 'Lateef';
+  fontFamily: 'Amiri' | 'Lateef' | 'Scheherazade' | 'Reem Kufi' | 'Noto Naskh' | 'Cairo' | 'Tajawal' | 'Almarai' | 'Noto Sans Arabic' | 'DM Mono' | 'Ruwudu' | 'IBM Plex Sans Arabic';
   fontSize: number;
   textColor: 'gold' | 'white' | 'black';
-  showFrame: boolean;
   showTranslation: boolean;
+  borderType: BorderType['id'];
 }
 
 interface CanvasPreviewProps {
@@ -45,11 +46,25 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
       fontFamily,
       fontSize,
       textColor,
-      showFrame,
-      showTranslation
+      showTranslation,
+      borderType
     } = settings;
 
-    const fontClass = fontFamily === 'Amiri' ? 'font-amiri' : 'font-lateef';
+    const fontFamilyMap = {
+      'Amiri': "Amiri, serif",
+      'Lateef': "Lateef, cursive",
+      'Scheherazade': "Scheherazade New, serif",
+      'Reem Kufi': "Reem Kufi, sans-serif",
+      'Noto Naskh': "Noto Naskh Arabic, serif",
+      'Cairo': "Cairo, sans-serif",
+      'Tajawal': "Tajawal, sans-serif",
+      'Almarai': "Almarai, sans-serif",
+      'Noto Sans Arabic': "Noto Sans Arabic, sans-serif",
+      'DM Mono': "DM Mono, monospace",
+      'Ruwudu': "Ruwudu, serif",
+      'IBM Plex Sans Arabic': "IBM Plex Sans Arabic, sans-serif"
+    };
+    const currentFontFamily = fontFamilyMap[fontFamily];
     const currentTextColor = textColorMap[textColor];
 
     return (
@@ -91,52 +106,89 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
 
         {/* Layer 4: Text Content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
-          {/* Ornamental Frame */}
-          {showFrame && (
-            <div
-              className="absolute inset-8 border-2 pointer-events-none"
-              style={{
-                borderColor: currentTextColor,
-                opacity: 0.6
-              }}
-            >
-              {/* Corner decorations */}
-              <div
-                className="absolute -top-1 -left-1 w-6 h-6"
-                style={{
-                  borderTop: `2px solid ${currentTextColor}`,
-                  borderLeft: `2px solid ${currentTextColor}`
-                }}
-              />
-              <div
-                className="absolute -top-1 -right-1 w-6 h-6"
-                style={{
-                  borderTop: `2px solid ${currentTextColor}`,
-                  borderRight: `2px solid ${currentTextColor}`
-                }}
-              />
-              <div
-                className="absolute -bottom-1 -left-1 w-6 h-6"
-                style={{
-                  borderBottom: `2px solid ${currentTextColor}`,
-                  borderLeft: `2px solid ${currentTextColor}`
-                }}
-              />
-              <div
-                className="absolute -bottom-1 -right-1 w-6 h-6"
-                style={{
-                  borderBottom: `2px solid ${currentTextColor}`,
-                  borderRight: `2px solid ${currentTextColor}`
-                }}
-              />
-            </div>
+          {/* Border Frame */}
+          {borderType !== 'none' && (
+            <>
+              {borderType === 'simple' && (
+                <div
+                  className="absolute inset-8 border pointer-events-none"
+                  style={{ borderColor: currentTextColor, opacity: 0.6, borderWidth: '1px' }}
+                />
+              )}
+              
+              {borderType === 'double' && (
+                <>
+                  <div
+                    className="absolute inset-8 border-2 pointer-events-none"
+                    style={{ borderColor: currentTextColor, opacity: 0.6 }}
+                  />
+                  <div
+                    className="absolute inset-9 border pointer-events-none"
+                    style={{ borderColor: currentTextColor, opacity: 0.4, borderWidth: '1px' }}
+                  />
+                </>
+              )}
+              
+              {borderType === 'ornate-corners' && (
+                <div className="absolute inset-8 pointer-events-none">
+                  {/* Main border */}
+                  <div
+                    className="absolute inset-0 border-2"
+                    style={{ borderColor: currentTextColor, opacity: 0.6 }}
+                  />
+                  {/* Ornate corners */}
+                  <div className="absolute -top-3 -left-3 w-8 h-8" style={{ borderTop: `3px solid ${currentTextColor}`, borderLeft: `3px solid ${currentTextColor}`, opacity: 0.8 }} />
+                  <div className="absolute -top-3 -right-3 w-8 h-8" style={{ borderTop: `3px solid ${currentTextColor}`, borderRight: `3px solid ${currentTextColor}`, opacity: 0.8 }} />
+                  <div className="absolute -bottom-3 -left-3 w-8 h-8" style={{ borderBottom: `3px solid ${currentTextColor}`, borderLeft: `3px solid ${currentTextColor}`, opacity: 0.8 }} />
+                  <div className="absolute -bottom-3 -right-3 w-8 h-8" style={{ borderBottom: `3px solid ${currentTextColor}`, borderRight: `3px solid ${currentTextColor}`, opacity: 0.8 }} />
+                </div>
+              )}
+              
+              {borderType === 'geometric' && (
+                <div className="absolute inset-8 pointer-events-none">
+                  {/* Main border */}
+                  <div
+                    className="absolute inset-0 border-2"
+                    style={{ borderColor: currentTextColor, opacity: 0.5 }}
+                  />
+                  {/* Geometric corners - diamond shapes */}
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: `8px solid ${currentTextColor}`, opacity: 0.7 }} />
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderTop: `8px solid ${currentTextColor}`, opacity: 0.7 }} />
+                  <div className="absolute top-1/2 -left-2 -translate-y-1/2 w-0 h-0" style={{ borderTop: '8px solid transparent', borderBottom: '8px solid transparent', borderRight: `8px solid ${currentTextColor}`, opacity: 0.7 }} />
+                  <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-0 h-0" style={{ borderTop: '8px solid transparent', borderBottom: '8px solid transparent', borderLeft: `8px solid ${currentTextColor}`, opacity: 0.7 }} />
+                </div>
+              )}
+              
+              {borderType === 'mosque' && (
+                <div className="absolute inset-8 pointer-events-none">
+                  {/* Main border */}
+                  <div
+                    className="absolute inset-0 border-2"
+                    style={{ borderColor: currentTextColor, opacity: 0.6 }}
+                  />
+                  {/* Mosque arch at top */}
+                  <div
+                    className="absolute -top-8 left-1/2 -translate-x-1/2 w-32 h-16"
+                    style={{
+                      borderTop: `3px solid ${currentTextColor}`,
+                      borderLeft: `3px solid ${currentTextColor}`,
+                      borderRight: `3px solid ${currentTextColor}`,
+                      borderRadius: '50% 50% 0 0 / 100% 100% 0 0',
+                      opacity: 0.7
+                    }}
+                  />
+                </div>
+              )}
+            </>
           )}
 
           {/* Arabic Text */}
           <div
-            className={`${fontClass} text-center leading-relaxed`}
+            className="text-center leading-relaxed"
             style={{
+              fontFamily: currentFontFamily,
               fontSize: `${fontSize}px`,
+              fontWeight: 400,
               color: currentTextColor,
               textShadow: textColor === 'white' ? '0 2px 8px rgba(0,0,0,0.5)' : '0 2px 8px rgba(0,0,0,0.3)',
               direction: 'rtl'
