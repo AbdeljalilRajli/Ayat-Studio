@@ -243,13 +243,23 @@ function App() {
 
       {/* Main Stage */}
       <main className="flex-1 flex flex-col relative overflow-hidden">
+        {/* Background Canvas Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url('/background-canvas.jpg')`
+          }}
+        />
+        {/* Dark overlay - reduced at bottom */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.7) 0%, rgba(15, 23, 42, 0.7) 60%, rgba(15, 23, 42, 0.4) 100%)'
+          }}
+        />
+        
         {/* Preview Area */}
         <div className="flex-1 flex items-center justify-center p-8 relative">
-          {/* Background decoration */}
-          <div className="absolute inset-0 opacity-5 pointer-events-none">
-            <div className="absolute top-20 left-20 w-64 h-64 rounded-full bg-[#d4af37] blur-[100px]" />
-            <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full bg-[#064e3b] blur-[120px]" />
-          </div>
 
           {/* Canvas Preview */}
           <div className="relative z-10 mb-16">
