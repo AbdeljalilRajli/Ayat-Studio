@@ -23,9 +23,9 @@ interface CanvasPreviewProps {
 }
 
 const aspectRatioClasses = {
-  story: 'aspect-[9/16] w-[360px]',
-  square: 'aspect-square w-[400px]',
-  desktop: 'aspect-[16/9] w-[640px]'
+  story: 'aspect-[9/16] w-full max-w-[420px] sm:max-w-[480px] lg:max-w-[560px]',
+  square: 'aspect-square w-full max-w-[460px] sm:max-w-[520px] lg:max-w-[620px]',
+  desktop: 'aspect-[16/9] w-full max-w-[920px] 2xl:max-w-[1040px]'
 };
 
 const textColorMap = {
@@ -66,11 +66,13 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
     };
     const currentFontFamily = fontFamilyMap[fontFamily];
     const currentTextColor = textColorMap[textColor];
+    const basePatternAlpha = Math.min(1, Math.pow(patternOpacity / 100, 0.65) * 1.25);
+    const strongPatternAlpha = Math.max(0, Math.min(1, (patternOpacity - 70) / 30)) * 0.9;
 
     return (
       <div
         ref={ref}
-        className={`relative ${aspectRatioClasses[aspectRatio]} overflow-hidden shadow-2xl`}
+        className={`relative ${aspectRatioClasses[aspectRatio]} overflow-hidden shadow-2xl ring-1 ring-white/10`}
         style={{
           backgroundColor,
           backgroundImage: backgroundImage
@@ -84,15 +86,30 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
 
         {/* Layer 2: Pattern Overlay */}
         {pattern.id !== 'none' && (
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              backgroundImage: pattern.css,
-              backgroundSize: '60px 60px',
-              opacity: patternOpacity / 100,
-              mixBlendMode: 'multiply'
-            }}
-          />
+          <>
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                backgroundImage: pattern.css,
+                backgroundSize: '120px 120px',
+                backgroundRepeat: 'repeat',
+                opacity: basePatternAlpha,
+                mixBlendMode: 'soft-light'
+              }}
+            />
+            {strongPatternAlpha > 0 && (
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  backgroundImage: pattern.css,
+                  backgroundSize: '120px 120px',
+                  backgroundRepeat: 'repeat',
+                  opacity: strongPatternAlpha,
+                  mixBlendMode: 'normal'
+                }}
+              />
+            )}
+          </>
         )}
 
         {/* Layer 3: Vignette/Dark Overlay */}
@@ -105,7 +122,7 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
         />
 
         {/* Layer 4: Text Content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 sm:p-8 lg:p-10">
           {/* Border Frame */}
           {borderType !== 'none' && (
             <>
@@ -281,7 +298,7 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
 
           {/* Divider */}
           <div
-            className="w-16 h-px my-4"
+            className="w-16 h-px my-4 sm:my-5"
             style={{
               backgroundColor: currentTextColor,
               opacity: 0.5

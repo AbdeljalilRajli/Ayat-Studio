@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import html2canvas from 'html2canvas';
+import { Monitor, Smartphone, Square } from 'lucide-react';
 import { verses } from './data/verses';
 import { patterns } from './data/patterns';
 import { CanvasPreview, type CanvasSettings } from './components/CanvasPreview';
@@ -211,7 +212,7 @@ function App() {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-900">
+    <div className="flex flex-col lg:flex-row min-h-screen w-screen bg-slate-900 overflow-y-auto lg:h-screen lg:overflow-hidden">
       {/* Sidebar */}
       <Sidebar
         verses={verses}
@@ -258,50 +259,49 @@ function App() {
           }}
         />
         
-        {/* Preview Area */}
-        <div className="flex-1 flex items-center justify-center p-8 relative">
-
-          {/* Canvas Preview */}
-          <div className="relative z-10 mb-16">
+        <div className="flex-1 relative p-4 sm:p-8 overflow-visible lg:overflow-y-auto">
+          <div className="relative z-10 w-full max-w-[1200px] mx-auto flex flex-col items-center justify-center gap-5 py-4">
             <CanvasPreview
               ref={canvasRef}
               settings={canvasSettings}
               aspectRatio={previewAspectRatio}
             />
-          </div>
 
-          {/* Aspect Ratio Toggles */}
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-2">
-            <button
-              onClick={() => setPreviewAspectRatio('story')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                previewAspectRatio === 'story'
-                  ? 'bg-[#d4af37] text-slate-900'
-                  : 'glass text-gray-300 hover:bg-[#d4af37]/20'
-              }`}
-            >
-              9:16 Story
-            </button>
-            <button
-              onClick={() => setPreviewAspectRatio('square')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                previewAspectRatio === 'square'
-                  ? 'bg-[#d4af37] text-slate-900'
-                  : 'glass text-gray-300 hover:bg-[#d4af37]/20'
-              }`}
-            >
-              1:1 Square
-            </button>
-            <button
-              onClick={() => setPreviewAspectRatio('desktop')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                previewAspectRatio === 'desktop'
-                  ? 'bg-[#d4af37] text-slate-900'
-                  : 'glass text-gray-300 hover:bg-[#d4af37]/20'
-              }`}
-            >
-              16:9 Desktop
-            </button>
+            <div className="glass-light rounded-2xl p-1.5 flex items-center gap-1 lg:sticky lg:bottom-6">
+              <button
+                onClick={() => setPreviewAspectRatio('story')}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+                  previewAspectRatio === 'story'
+                    ? 'bg-[#d4af37] text-slate-950'
+                    : 'text-slate-200 hover:bg-white/5'
+                }`}
+              >
+                <Smartphone className="w-4 h-4" />
+                9:16
+              </button>
+              <button
+                onClick={() => setPreviewAspectRatio('square')}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+                  previewAspectRatio === 'square'
+                    ? 'bg-[#d4af37] text-slate-950'
+                    : 'text-slate-200 hover:bg-white/5'
+                }`}
+              >
+                <Square className="w-4 h-4" />
+                1:1
+              </button>
+              <button
+                onClick={() => setPreviewAspectRatio('desktop')}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+                  previewAspectRatio === 'desktop'
+                    ? 'bg-[#d4af37] text-slate-950'
+                    : 'text-slate-200 hover:bg-white/5'
+                }`}
+              >
+                <Monitor className="w-4 h-4" />
+                16:9
+              </button>
+            </div>
           </div>
         </div>
 

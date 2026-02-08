@@ -74,7 +74,7 @@ export function Sidebar({
   };
 
   return (
-    <aside className="w-[360px] h-screen flex flex-col overflow-hidden relative">
+    <aside className="w-full lg:w-[360px] lg:h-screen flex flex-col overflow-hidden relative shrink-0">
       {/* Background layers */}
       <div className="absolute inset-0 bg-slate-950" />
       <div
@@ -111,7 +111,7 @@ export function Sidebar({
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+        <div className="px-5 py-5 space-y-5 lg:flex-1 lg:overflow-y-auto">
         {/* Verse Selection */}
           <section className="rounded-3xl bg-slate-900/30 border border-white/5 backdrop-blur-sm p-4 space-y-3">
             <h2 className="text-sm font-semibold text-[#d4af37] flex items-center gap-2">
