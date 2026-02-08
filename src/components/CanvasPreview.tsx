@@ -2,11 +2,14 @@ import { forwardRef } from 'react';
 import type { Verse } from '../data/verses';
 import type { Pattern } from '../data/patterns';
 import type { BorderType } from '../data/borders';
+import type { GradientPreset } from '../data/gradients';
 
 export interface CanvasSettings {
   verse: Verse;
   backgroundImage: string | null;
+  backgroundMode: 'solid' | 'gradient';
   backgroundColor: string;
+  backgroundGradient: GradientPreset;
   pattern: Pattern;
   patternOpacity: number;
   vignetteIntensity: number;
@@ -39,7 +42,9 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
     const {
       verse,
       backgroundImage,
+      backgroundMode,
       backgroundColor,
+      backgroundGradient,
       pattern,
       patternOpacity,
       vignetteIntensity,
@@ -77,7 +82,9 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
           backgroundColor,
           backgroundImage: backgroundImage
             ? `url(${backgroundImage})`
-            : undefined,
+            : backgroundMode === 'gradient' && backgroundGradient.id !== 'none'
+              ? backgroundGradient.css
+              : undefined,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}

@@ -1,6 +1,7 @@
 import { Upload, Download, Smartphone, Square, Monitor, Image as ImageIcon, Palette, Type, Frame, BookOpen } from 'lucide-react';
 import type { Verse } from '../data/verses';
 import type { Pattern } from '../data/patterns';
+import type { GradientPreset } from '../data/gradients';
 import type { BorderType } from '../data/borders';
 import { borderTypes } from '../data/borders';
 import { ColorPicker } from './ColorPicker';
@@ -10,12 +11,17 @@ type FontFamily = 'Amiri' | 'Lateef' | 'Scheherazade' | 'Reem Kufi' | 'Noto Nask
 interface SidebarProps {
   verses: Verse[];
   patterns: Pattern[];
+  gradients: GradientPreset[];
   selectedVerseId: string;
   onSelectVerse: (id: string) => void;
   backgroundImage: string | null;
   onBackgroundImageChange: (image: string | null) => void;
+  backgroundMode: 'solid' | 'gradient';
+  onBackgroundModeChange: (mode: 'solid' | 'gradient') => void;
   backgroundColor: string;
   onBackgroundColorChange: (color: string) => void;
+  selectedGradientId: string;
+  onSelectGradient: (id: string) => void;
   selectedPatternId: string;
   onSelectPattern: (id: string) => void;
   patternOpacity: number;
@@ -38,12 +44,17 @@ interface SidebarProps {
 export function Sidebar({
   verses,
   patterns,
+  gradients,
   selectedVerseId,
   onSelectVerse,
   backgroundImage,
   onBackgroundImageChange,
+  backgroundMode,
+  onBackgroundModeChange,
   backgroundColor,
   onBackgroundColorChange,
+  selectedGradientId,
+  onSelectGradient,
   selectedPatternId,
   onSelectPattern,
   patternOpacity,
@@ -173,8 +184,60 @@ export function Sidebar({
 
             {/* Solid Color */}
             <div className="space-y-2">
-              <label className="block text-xs text-slate-400">Or Solid Color</label>
-              <ColorPicker color={backgroundColor} onChange={onBackgroundColorChange} />
+              <div className="flex items-center justify-between">
+                <label className="block text-xs text-slate-400">Background Style</label>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => onBackgroundModeChange('solid')}
+                  className={`py-2.5 rounded-2xl text-xs font-semibold transition-all ${
+                    backgroundMode === 'solid'
+                      ? 'bg-[#d4af37] text-slate-950'
+                      : 'bg-slate-950/35 border border-white/5 text-slate-200 hover:border-[#d4af37]/25'
+                  }`}
+                >
+                  Solid
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onBackgroundModeChange('gradient')}
+                  className={`py-2.5 rounded-2xl text-xs font-semibold transition-all ${
+                    backgroundMode === 'gradient'
+                      ? 'bg-[#d4af37] text-slate-950'
+                      : 'bg-slate-950/35 border border-white/5 text-slate-200 hover:border-[#d4af37]/25'
+                  }`}
+                >
+                  Gradient
+                </button>
+              </div>
+
+              {backgroundMode === 'solid' ? (
+                <>
+                  <label className="block text-xs text-slate-400">Solid Color</label>
+                  <ColorPicker color={backgroundColor} onChange={onBackgroundColorChange} />
+                </>
+              ) : (
+                <>
+                  <label className="block text-xs text-slate-400">Gradient Preset</label>
+                  <select
+                    value={selectedGradientId}
+                    onChange={(e) => onSelectGradient(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-950/40 border border-[#d4af37]/25 text-sm text-white focus:border-[#d4af37]/70 focus:outline-none focus:ring-2 focus:ring-[#d4af37]/15 transition-colors"
+                  >
+                    {gradients.map(g => (
+                      <option key={g.id} value={g.id}>
+                        {g.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div
+                    className="h-12 rounded-2xl border border-white/5"
+                    style={{ backgroundImage: gradients.find(g => g.id === selectedGradientId)?.css || 'none' }}
+                  />
+                </>
+              )}
             </div>
           </section>
 
