@@ -18,6 +18,7 @@ function App() {
   const [selectedGradientId, setSelectedGradientId] = useState('emerald-night');
   const [selectedPatternId, setSelectedPatternId] = useState('none');
   const [patternOpacity, setPatternOpacity] = useState(30);
+  const [patternColor, setPatternColor] = useState('#d4af37');
   const [vignetteIntensity, setVignetteIntensity] = useState(50);
   const [fontFamily, setFontFamily] = useState<FontFamily>('Amiri');
   const [fontSize, setFontSize] = useState(48);
@@ -43,6 +44,7 @@ function App() {
     backgroundGradient: currentGradient,
     pattern: currentPattern,
     patternOpacity,
+    patternColor,
     vignetteIntensity,
     fontFamily,
     fontSize,
@@ -91,14 +93,26 @@ function App() {
       const exportTextColor = textColor === 'gold' ? '#d4af37' : textColor === 'white' ? '#ffffff' : '#000000';
       const sanitizeForStyleAttr = (value: string) => value.replaceAll('"', "'");
 
-      const svgPatternToPngDataUrl = async (cssUrlValue: string, size: number) => {
+      const svgPatternToPngDataUrl = async (cssUrlValue: string, size: number, tintColor?: string) => {
         const match = cssUrlValue.match(/url\((['"]?)(.*?)\1\)/);
         const rawUrl = match?.[2];
         if (!rawUrl) return null;
-        if (!rawUrl.startsWith('data:image/svg+xml')) return null;
+
+        const isSvgDataUrl = rawUrl.startsWith('data:image/svg+xml');
+        const isSvgFileUrl = (() => {
+          try {
+            const url = new URL(rawUrl, window.location.origin);
+            return url.pathname.toLowerCase().endsWith('.svg');
+          } catch {
+            return false;
+          }
+        })();
+
+        if (!isSvgDataUrl && !isSvgFileUrl) return null;
 
         const img = new Image();
         img.decoding = 'async';
+        img.crossOrigin = 'anonymous';
         img.src = rawUrl;
 
         await new Promise<void>((resolve, reject) => {
@@ -114,6 +128,13 @@ function App() {
         ctx.clearRect(0, 0, size, size);
         ctx.drawImage(img, 0, 0, size, size);
 
+        if (tintColor) {
+          ctx.globalCompositeOperation = 'source-in';
+          ctx.fillStyle = tintColor;
+          ctx.fillRect(0, 0, size, size);
+          ctx.globalCompositeOperation = 'source-over';
+        }
+
         return c.toDataURL('image/png');
       };
 
@@ -122,8 +143,8 @@ function App() {
         if (css === 'none') return 'none';
 
         const trimmed = css.trim();
-        if (trimmed.startsWith('url(') && trimmed.includes('data:image/svg+xml')) {
-          const pngDataUrl = await svgPatternToPngDataUrl(trimmed, 120);
+        if (trimmed.startsWith('url(')) {
+          const pngDataUrl = await svgPatternToPngDataUrl(trimmed, 120, patternColor);
           if (pngDataUrl) return `url('${pngDataUrl}')`;
         }
 
@@ -447,6 +468,8 @@ function App() {
         onSelectPattern={setSelectedPatternId}
         patternOpacity={patternOpacity}
         onPatternOpacityChange={setPatternOpacity}
+        patternColor={patternColor}
+        onPatternColorChange={setPatternColor}
         vignetteIntensity={vignetteIntensity}
         onVignetteIntensityChange={setVignetteIntensity}
         fontFamily={fontFamily}

@@ -26,6 +26,8 @@ interface SidebarProps {
   onSelectPattern: (id: string) => void;
   patternOpacity: number;
   onPatternOpacityChange: (opacity: number) => void;
+  patternColor: string;
+  onPatternColorChange: (color: string) => void;
   vignetteIntensity: number;
   onVignetteIntensityChange: (intensity: number) => void;
   fontFamily: FontFamily;
@@ -59,6 +61,8 @@ export function Sidebar({
   onSelectPattern,
   patternOpacity,
   onPatternOpacityChange,
+  patternColor,
+  onPatternColorChange,
   vignetteIntensity,
   onVignetteIntensityChange,
   fontFamily,
@@ -271,6 +275,11 @@ export function Sidebar({
                 onChange={(e) => onPatternOpacityChange(Number(e.target.value))}
                 className="w-full h-1.5 bg-slate-800 rounded-full appearance-none cursor-pointer accent-[#d4af37]"
               />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-xs text-slate-400">Pattern Color</label>
+              <ColorPicker color={patternColor} onChange={onPatternColorChange} />
             </div>
           </section>
 

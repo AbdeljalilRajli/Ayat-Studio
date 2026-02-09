@@ -12,6 +12,7 @@ export interface CanvasSettings {
   backgroundGradient: GradientPreset;
   pattern: Pattern;
   patternOpacity: number;
+  patternColor: string;
   vignetteIntensity: number;
   fontFamily: 'Amiri' | 'Lateef' | 'Scheherazade' | 'Reem Kufi' | 'Noto Naskh' | 'Cairo' | 'Tajawal' | 'Almarai' | 'Noto Sans Arabic' | 'DM Mono' | 'Ruwudu' | 'IBM Plex Sans Arabic';
   fontSize: number;
@@ -47,6 +48,7 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
       backgroundGradient,
       pattern,
       patternOpacity,
+      patternColor,
       vignetteIntensity,
       fontFamily,
       fontSize,
@@ -97,9 +99,13 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
-                backgroundImage: pattern.css,
-                backgroundSize: '120px 120px',
-                backgroundRepeat: 'repeat',
+                backgroundColor: patternColor,
+                WebkitMaskImage: pattern.css,
+                maskImage: pattern.css,
+                WebkitMaskSize: '120px 120px',
+                maskSize: '120px 120px',
+                WebkitMaskRepeat: 'repeat',
+                maskRepeat: 'repeat',
                 opacity: basePatternAlpha,
                 mixBlendMode: 'soft-light'
               }}
@@ -108,9 +114,13 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
               <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
-                  backgroundImage: pattern.css,
-                  backgroundSize: '120px 120px',
-                  backgroundRepeat: 'repeat',
+                  backgroundColor: patternColor,
+                  WebkitMaskImage: pattern.css,
+                  maskImage: pattern.css,
+                  WebkitMaskSize: '120px 120px',
+                  maskSize: '120px 120px',
+                  WebkitMaskRepeat: 'repeat',
+                  maskRepeat: 'repeat',
                   opacity: strongPatternAlpha,
                   mixBlendMode: 'normal'
                 }}
