@@ -1,73 +1,107 @@
-# React + TypeScript + Vite
+# Ayat Studio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A calm, modern editor to create beautiful Quran verse wallpapers inspired by Islamic geometry.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Verse selection**
+  Choose from a curated list of verses with Arabic + translation.
+- **Backgrounds**
+  Solid color or curated **gradient presets**, plus optional background image upload.
+- **Islamic patterns**
+  Pattern presets backed by SVGs in `public/patterns svgs/`.
+- **Pattern controls**
+  Intensity slider and **pattern color** (tint) picker.
+- **Borders**
+  Multiple ornamental border styles.
+- **Typography**
+  Arabic font selection, font sizing, translation toggle.
+- **Export to PNG**
+  Export Story (9:16), Square (1:1), and Desktop (16:9).
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React + TypeScript
+- Vite
+- Tailwind CSS
+- html2canvas (for PNG export)
+- lucide-react (icons)
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js 18+ recommended
+- npm
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Install
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Run locally
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+### Build
+
+```bash
+npm run build
+```
+
+### Preview production build
+
+```bash
+npm run preview
+```
+
+### Lint
+
+```bash
+npm run lint
+```
+
+## Usage
+
+1. Pick a verse.
+2. Choose a background:
+   - **Solid** color, or
+   - **Gradient** preset, or
+   - Upload a background image.
+3. Add a pattern overlay and tune:
+   - **Intensity**
+   - **Pattern color**
+4. Pick border + typography.
+5. Export for your desired format.
+
+## Patterns folder
+
+Patterns are loaded from:
+
+```
+public/patterns svgs/
+```
+
+If you add or rename SVGs there, update `src/data/patterns.ts` to include them.
+
+## Export notes
+
+- Export uses `html2canvas`. To make patterns export reliably, SVG pattern tiles are rasterized to PNG during export.
+- If an SVG pattern fails to export, make sure it loads correctly in the browser (valid SVG, no external references).
+
+## Screenshots
+
+- Add screenshots/gifs here (recommended):
+  - `./docs/screenshot-1.png`
+  - `./docs/screenshot-2.png`
+
+## Contributing
+
+Pull requests are welcome.
+
+## License
+
+Add a license that matches how you want to share this project (MIT is a common choice).
