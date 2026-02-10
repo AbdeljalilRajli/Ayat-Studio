@@ -112,8 +112,8 @@ export function Sidebar({
               <BookOpen className="w-5 h-5 text-[#d4af37] relative" />
             </div>
             <div className="flex-1">
-              <h1 className="text-[18px] leading-tight font-semibold tracking-tight text-white">
-                Aya Wallpaper Studio
+              <h1 className="text-[18px] leading-tight font-semibold tracking-tight text-[#d4af37]">
+                Ayat Studio
               </h1>
               <p className="text-[11px] text-slate-400">Create beautiful Quran wallpapers</p>
             </div>
