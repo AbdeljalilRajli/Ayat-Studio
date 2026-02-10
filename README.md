@@ -94,9 +94,7 @@ If you add or rename SVGs there, update `src/data/patterns.ts` to include them.
 
 ## Screenshots
 
-- Add screenshots/gifs here (recommended):
-  - `./docs/screenshot-1.png`
-  - `./docs/screenshot-2.png`
+![Ayat Studio Screenshot](public/ayat-studio-screen.png)
 
 ## Contributing
 
@@ -104,4 +102,4 @@ Pull requests are welcome.
 
 ## License
 
-Add a license that matches how you want to share this project (MIT is a common choice).
+MIT. See [LICENSE](LICENSE).
