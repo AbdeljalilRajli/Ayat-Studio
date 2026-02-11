@@ -1,4 +1,5 @@
-import { Upload, Download, Smartphone, Square, Monitor, Image as ImageIcon, Palette, Type, Frame, BookOpen } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Upload, Download, Smartphone, Square, Monitor, Image as ImageIcon, Palette, Type, Frame, BookOpen, Loader2 } from 'lucide-react';
 import type { Verse } from '../data/verses';
 import type { Pattern } from '../data/patterns';
 import type { GradientPreset } from '../data/gradients';
@@ -34,14 +35,39 @@ interface SidebarProps {
   onFontFamilyChange: (family: FontFamily) => void;
   fontSize: number;
   onFontSizeChange: (size: number) => void;
-  textColor: 'gold' | 'white' | 'black';
-  onTextColorChange: (color: 'gold' | 'white' | 'black') => void;
+  textColor: 'gold' | 'white' | 'black' | 'gold-gradient';
+  onTextColorChange: (color: 'gold' | 'white' | 'black' | 'gold-gradient') => void;
   borderType: BorderType['id'];
   onBorderTypeChange: (type: BorderType['id']) => void;
   showTranslation: boolean;
   onShowTranslationChange: (show: boolean) => void;
   onExport: (ratio: 'story' | 'square' | 'desktop') => void;
+  isExporting: boolean;
 }
+
+// Stagger animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1
+    }
+  }
+};
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const }
+  }
+};
+
+// Glass section classes
+const glassSection = 'rounded-3xl bg-white/[0.06] border border-white/[0.15] backdrop-blur-xl shadow-lg shadow-black/10 p-4 space-y-3';
 
 export function Sidebar({
   verses,
@@ -75,7 +101,8 @@ export function Sidebar({
   onBorderTypeChange,
   showTranslation,
   onShowTranslationChange,
-  onExport
+  onExport,
+  isExporting
 }: SidebarProps) {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -105,7 +132,12 @@ export function Sidebar({
 
       <div className="relative z-10 h-full flex flex-col">
         {/* Header */}
-        <div className="px-5 pt-6 pb-5 border-b border-[#d4af37]/15">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="px-5 pt-6 pb-5 border-b border-[#d4af37]/15"
+        >
           <div className="flex items-center gap-3">
             <div className="relative w-11 h-11 rounded-2xl bg-[#d4af37]/10 border border-[#d4af37]/25 flex items-center justify-center">
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#d4af37]/15 to-transparent" />
@@ -118,17 +150,22 @@ export function Sidebar({
               <p className="text-[11px] text-slate-400">Create beautiful Quran wallpapers</p>
             </div>
           </div>
-          <div className="mt-4 rounded-2xl bg-slate-900/30 border border-white/5 px-4 py-3 backdrop-blur-sm">
+          <div className="mt-4 rounded-2xl bg-white/[0.04] border border-white/[0.1] px-4 py-3 backdrop-blur-xl">
             <p className="text-[11px] text-slate-400 leading-relaxed">
               A calm, modern editor inspired by Islamic geometry. Customize verse, background, patterns, typography, and borders.
             </p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Scrollable Content */}
-        <div className="px-5 py-5 space-y-5 lg:flex-1 lg:overflow-y-auto">
-        {/* Verse Selection */}
-          <section className="rounded-3xl bg-slate-900/30 border border-white/5 backdrop-blur-sm p-4 space-y-3">
+        <motion.div
+          className="px-5 py-5 space-y-5 lg:flex-1 lg:overflow-y-auto"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {/* Verse Selection */}
+          <motion.section variants={sectionVariants} className={glassSection}>
             <h2 className="text-sm font-semibold text-[#d4af37] flex items-center gap-2">
               <BookOpen className="w-4 h-4" />
               Select Verse
@@ -152,15 +189,15 @@ export function Sidebar({
                 {verses.find(v => v.id === selectedVerseId)?.translation.slice(0, 80)}...
               </p>
             </div>
-          </section>
+          </motion.section>
 
-        {/* Background */}
-          <section className="rounded-3xl bg-slate-900/30 border border-white/5 backdrop-blur-sm p-4 space-y-3">
+          {/* Background */}
+          <motion.section variants={sectionVariants} className={glassSection}>
             <h2 className="text-sm font-semibold text-[#d4af37] flex items-center gap-2">
               <ImageIcon className="w-4 h-4" />
               Background
             </h2>
-            
+
             {/* Image Upload */}
             <div className="space-y-2">
               <label className="block text-xs text-slate-400">Upload Image</label>
@@ -196,22 +233,20 @@ export function Sidebar({
                 <button
                   type="button"
                   onClick={() => onBackgroundModeChange('solid')}
-                  className={`py-2.5 rounded-2xl text-xs font-semibold transition-all ${
-                    backgroundMode === 'solid'
-                      ? 'bg-[#d4af37] text-slate-950'
-                      : 'bg-slate-950/35 border border-white/5 text-slate-200 hover:border-[#d4af37]/25'
-                  }`}
+                  className={`py-2.5 rounded-2xl text-xs font-semibold transition-all ${backgroundMode === 'solid'
+                    ? 'bg-[#d4af37] text-slate-950'
+                    : 'bg-slate-950/35 border border-white/5 text-slate-200 hover:border-[#d4af37]/25'
+                    }`}
                 >
                   Solid
                 </button>
                 <button
                   type="button"
                   onClick={() => onBackgroundModeChange('gradient')}
-                  className={`py-2.5 rounded-2xl text-xs font-semibold transition-all ${
-                    backgroundMode === 'gradient'
-                      ? 'bg-[#d4af37] text-slate-950'
-                      : 'bg-slate-950/35 border border-white/5 text-slate-200 hover:border-[#d4af37]/25'
-                  }`}
+                  className={`py-2.5 rounded-2xl text-xs font-semibold transition-all ${backgroundMode === 'gradient'
+                    ? 'bg-[#d4af37] text-slate-950'
+                    : 'bg-slate-950/35 border border-white/5 text-slate-200 hover:border-[#d4af37]/25'
+                    }`}
                 >
                   Gradient
                 </button>
@@ -243,10 +278,10 @@ export function Sidebar({
                 </>
               )}
             </div>
-          </section>
+          </motion.section>
 
-        {/* Pattern */}
-          <section className="rounded-3xl bg-slate-900/30 border border-white/5 backdrop-blur-sm p-4 space-y-3">
+          {/* Pattern */}
+          <motion.section variants={sectionVariants} className={glassSection}>
             <h2 className="text-sm font-semibold text-[#d4af37] flex items-center gap-2">
               <Palette className="w-4 h-4" />
               Pattern Overlay
@@ -281,10 +316,10 @@ export function Sidebar({
               <label className="block text-xs text-slate-400">Pattern Color</label>
               <ColorPicker color={patternColor} onChange={onPatternColorChange} />
             </div>
-          </section>
+          </motion.section>
 
-        {/* Vignette */}
-          <section className="rounded-3xl bg-slate-900/30 border border-white/5 backdrop-blur-sm p-4 space-y-3">
+          {/* Vignette */}
+          <motion.section variants={sectionVariants} className={glassSection}>
             <h2 className="text-sm font-semibold text-[#d4af37]">Vignette Effect</h2>
             <div className="space-y-2">
               <label className="flex justify-between text-xs text-slate-400">
@@ -300,15 +335,15 @@ export function Sidebar({
                 className="w-full h-1.5 bg-slate-800 rounded-full appearance-none cursor-pointer accent-[#d4af37]"
               />
             </div>
-          </section>
+          </motion.section>
 
-        {/* Typography */}
-          <section className="rounded-3xl bg-slate-900/30 border border-white/5 backdrop-blur-sm p-4 space-y-3">
+          {/* Typography */}
+          <motion.section variants={sectionVariants} className={glassSection}>
             <h2 className="text-sm font-semibold text-[#d4af37] flex items-center gap-2">
               <Type className="w-4 h-4" />
               Typography
             </h2>
-            
+
             {/* Font Family */}
             <div className="space-y-2">
               <label className="block text-xs text-slate-400">Arabic Font</label>
@@ -384,33 +419,40 @@ export function Sidebar({
               />
             </div>
 
-            {/* Text Color */}
+            {/* Text Color - now with 4 options including gold-gradient */}
             <div className="space-y-2">
               <label className="block text-xs text-slate-400">Text Color</label>
-              <div className="grid grid-cols-3 gap-2">
-                {(['gold', 'white', 'black'] as const).map((color) => (
+              <div className="grid grid-cols-4 gap-2">
+                {(['gold', 'white', 'black', 'gold-gradient'] as const).map((color) => (
                   <button
                     key={color}
                     onClick={() => onTextColorChange(color)}
-                    className={`py-2.5 px-3 rounded-2xl text-sm capitalize transition-all active:scale-[0.99] ${
-                      textColor === color ? 'ring-2 ring-[#d4af37]/80 ring-offset-2 ring-offset-slate-950/60' : 'hover:ring-1 hover:ring-[#d4af37]/25'
-                    } ${
-                      color === 'gold'
+                    className={`py-2.5 px-2 rounded-2xl text-xs capitalize transition-all active:scale-[0.99] ${textColor === color ? 'ring-2 ring-[#d4af37]/80 ring-offset-2 ring-offset-slate-950/60' : 'hover:ring-1 hover:ring-[#d4af37]/25'
+                      } ${color === 'gold'
                         ? 'bg-gradient-to-br from-[#d4af37] to-[#b8941f] text-slate-950 font-semibold'
                         : color === 'white'
                           ? 'bg-white text-slate-950 font-semibold'
-                          : 'bg-slate-950 text-white border border-slate-700'
-                    }`}
+                          : color === 'black'
+                            ? 'bg-slate-950 text-white border border-slate-700'
+                            : 'text-slate-950 font-semibold overflow-hidden relative'
+                      }`}
+                    style={
+                      color === 'gold-gradient'
+                        ? {
+                          background: 'linear-gradient(135deg, #b8860b 0%, #d4af37 25%, #ffd700 50%, #f0e68c 70%, #d4af37 100%)',
+                        }
+                        : undefined
+                    }
                   >
-                    {color}
+                    {color === 'gold-gradient' ? '✦ Metallic' : color}
                   </button>
                 ))}
               </div>
             </div>
-          </section>
+          </motion.section>
 
-        {/* Frame/Border Selection */}
-          <section className="rounded-3xl bg-slate-900/30 border border-white/5 backdrop-blur-sm p-4 space-y-3">
+          {/* Frame/Border Selection */}
+          <motion.section variants={sectionVariants} className={glassSection}>
             <h2 className="text-sm font-semibold text-[#d4af37] flex items-center gap-2">
               <Frame className="w-4 h-4" />
               Border Style
@@ -438,11 +480,16 @@ export function Sidebar({
                 className="w-4 h-4 rounded border-[#d4af37]/30 bg-slate-950/40 text-[#d4af37] focus:ring-[#d4af37]/30"
               />
             </label>
-          </section>
-        </div>
+          </motion.section>
+        </motion.div>
 
         {/* Export Section */}
-        <div className="px-5 py-5 border-t border-[#d4af37]/15 bg-slate-950/30 backdrop-blur-sm">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6, ease: 'easeOut' }}
+          className="px-5 py-5 border-t border-[#d4af37]/15 bg-white/[0.03] backdrop-blur-xl"
+        >
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-semibold text-[#d4af37] flex items-center gap-2">
               <Download className="w-4 h-4" />
@@ -451,32 +498,35 @@ export function Sidebar({
             <span className="text-[11px] text-slate-500">PNG • High quality</span>
           </div>
           <div className="grid grid-cols-3 gap-2">
-            <button
-              onClick={() => onExport('story')}
-              className="group flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-slate-900/35 border border-white/5 hover:border-[#d4af37]/40 hover:bg-[#d4af37]/10 transition-all"
-            >
-              <Smartphone className="w-4 h-4 text-[#d4af37] group-hover:scale-110 transition-transform" />
-              <span className="text-xs text-slate-200">Story</span>
-              <span className="text-[10px] text-slate-500">9:16</span>
-            </button>
-            <button
-              onClick={() => onExport('square')}
-              className="group flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-slate-900/35 border border-white/5 hover:border-[#d4af37]/40 hover:bg-[#d4af37]/10 transition-all"
-            >
-              <Square className="w-4 h-4 text-[#d4af37] group-hover:scale-110 transition-transform" />
-              <span className="text-xs text-slate-200">Post</span>
-              <span className="text-[10px] text-slate-500">1:1</span>
-            </button>
-            <button
-              onClick={() => onExport('desktop')}
-              className="group flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-slate-900/35 border border-white/5 hover:border-[#d4af37]/40 hover:bg-[#d4af37]/10 transition-all"
-            >
-              <Monitor className="w-4 h-4 text-[#d4af37] group-hover:scale-110 transition-transform" />
-              <span className="text-xs text-slate-200">Desktop</span>
-              <span className="text-[10px] text-slate-500">16:9</span>
-            </button>
+            {([
+              { ratio: 'story' as const, icon: Smartphone, label: 'Story', sub: '9:16' },
+              { ratio: 'square' as const, icon: Square, label: 'Post', sub: '1:1' },
+              { ratio: 'desktop' as const, icon: Monitor, label: 'Desktop', sub: '16:9' },
+            ]).map(({ ratio, icon: Icon, label, sub }) => (
+              <motion.button
+                key={ratio}
+                onClick={() => !isExporting && onExport(ratio)}
+                disabled={isExporting}
+                whileHover={isExporting ? {} : { scale: 1.05 }}
+                whileTap={isExporting ? {} : { scale: 0.97 }}
+                className={`group flex flex-col items-center gap-1.5 p-3 rounded-2xl border transition-all ${isExporting
+                  ? 'bg-slate-900/50 border-white/5 opacity-70 cursor-not-allowed'
+                  : 'bg-slate-900/35 border-white/5 hover:border-[#d4af37]/40 hover:bg-[#d4af37]/10 animate-pulse-glow'
+                  }`}
+              >
+                {isExporting ? (
+                  <Loader2 className="w-4 h-4 text-[#d4af37] animate-spin" />
+                ) : (
+                  <Icon className="w-4 h-4 text-[#d4af37] group-hover:scale-110 transition-transform" />
+                )}
+                <span className="text-xs text-slate-200">
+                  {isExporting ? 'Exporting...' : label}
+                </span>
+                {!isExporting && <span className="text-[10px] text-slate-500">{sub}</span>}
+              </motion.button>
+            ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </aside>
   );

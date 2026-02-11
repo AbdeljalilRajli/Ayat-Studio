@@ -22,7 +22,7 @@ function App() {
   const [vignetteIntensity, setVignetteIntensity] = useState(50);
   const [fontFamily, setFontFamily] = useState<FontFamily>('Amiri');
   const [fontSize, setFontSize] = useState(48);
-  const [textColor, setTextColor] = useState<'gold' | 'white' | 'black'>('gold');
+  const [textColor, setTextColor] = useState<'gold' | 'white' | 'black' | 'gold-gradient'>('gold');
   const [borderType, setBorderType] = useState('ornate-corners');
   const [showTranslation, setShowTranslation] = useState(true);
   const [previewAspectRatio, setPreviewAspectRatio] = useState<'story' | 'square' | 'desktop'>('story');
@@ -62,12 +62,12 @@ function App() {
 
   const handleExport = async (ratio: 'story' | 'square' | 'desktop') => {
     setIsExporting(true);
-    
+
     try {
       // Create a temporary off-screen container for high-res export
       const exportContainer = document.createElement('div');
       const { width, height } = exportDimensions[ratio];
-      
+
       // Set up the export container
       exportContainer.style.position = 'fixed';
       exportContainer.style.left = '0';
@@ -76,7 +76,7 @@ function App() {
       exportContainer.style.height = `${height}px`;
       exportContainer.style.pointerEvents = 'none';
       exportContainer.style.zIndex = '-1';
-      
+
       document.body.appendChild(exportContainer);
 
       // Render the canvas preview into the export container
@@ -90,7 +90,8 @@ function App() {
       const exportTranslationFontSize = Math.max(Math.round(fontSize * 0.35 * exportScale), 14);
       const exportMetaFontSize = Math.round(14 * exportScale);
 
-      const exportTextColor = textColor === 'gold' ? '#d4af37' : textColor === 'white' ? '#ffffff' : '#000000';
+      const exportTextColor = textColor === 'gold' || textColor === 'gold-gradient' ? '#d4af37' : textColor === 'white' ? '#ffffff' : '#000000';
+      const isGoldGradient = textColor === 'gold-gradient';
       const sanitizeForStyleAttr = (value: string) => value.replaceAll('"', "'");
 
       const svgPatternToPngDataUrl = async (cssUrlValue: string, size: number, tintColor?: string) => {
@@ -353,28 +354,63 @@ function App() {
             padding: ${Math.floor(width * 0.06)}px;
           ">
             ${borderHtml}
-            <div style="
-              font-family: ${
-                fontFamily === 'Amiri' ? 'Amiri, serif' : 
-                fontFamily === 'Lateef' ? 'Lateef, cursive' :
-                fontFamily === 'Scheherazade' ? 'Scheherazade New, serif' :
+            ${isGoldGradient ? `
+              <svg xmlns="http://www.w3.org/2000/svg" width="100%" style="overflow: visible; direction: rtl; text-align: center;">
+                <defs>
+                  <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#b8860b"/>
+                    <stop offset="25%" style="stop-color:#d4af37"/>
+                    <stop offset="50%" style="stop-color:#ffd700"/>
+                    <stop offset="70%" style="stop-color:#f0e68c"/>
+                    <stop offset="100%" style="stop-color:#d4af37"/>
+                  </linearGradient>
+                </defs>
+                <text
+                  x="50%"
+                  y="50%"
+                  dominant-baseline="central"
+                  text-anchor="middle"
+                  fill="url(#goldGrad)"
+                  style="
+                    font-family: ${fontFamily === 'Amiri' ? 'Amiri, serif' :
+            fontFamily === 'Lateef' ? 'Lateef, cursive' :
+              fontFamily === 'Scheherazade' ? 'Scheherazade New, serif' :
                 fontFamily === 'Reem Kufi' ? 'Reem Kufi, sans-serif' :
+                  fontFamily === 'Noto Naskh' ? 'Noto Naskh Arabic, serif' :
+                    fontFamily === 'Cairo' ? 'Cairo, sans-serif' :
+                      fontFamily === 'Tajawal' ? 'Tajawal, sans-serif' :
+                        fontFamily === 'Almarai' ? 'Almarai, sans-serif' :
+                          fontFamily === 'Noto Sans Arabic' ? 'Noto Sans Arabic, sans-serif' :
+                            fontFamily === 'DM Mono' ? 'DM Mono, monospace' :
+                              fontFamily === 'Ruwudu' ? 'Ruwudu, serif' :
+                                'IBM Plex Sans Arabic, sans-serif'
+          };
+                    font-size: ${exportArabicFontSize}px;
+                    direction: rtl;
+                  "
+                >${currentVerse.arabic}</text>
+              </svg>
+            ` : `<div style="
+              font-family: ${fontFamily === 'Amiri' ? 'Amiri, serif' :
+          fontFamily === 'Lateef' ? 'Lateef, cursive' :
+            fontFamily === 'Scheherazade' ? 'Scheherazade New, serif' :
+              fontFamily === 'Reem Kufi' ? 'Reem Kufi, sans-serif' :
                 fontFamily === 'Noto Naskh' ? 'Noto Naskh Arabic, serif' :
-                fontFamily === 'Cairo' ? 'Cairo, sans-serif' :
-                fontFamily === 'Tajawal' ? 'Tajawal, sans-serif' :
-                fontFamily === 'Almarai' ? 'Almarai, sans-serif' :
-                fontFamily === 'Noto Sans Arabic' ? 'Noto Sans Arabic, sans-serif' :
-                fontFamily === 'DM Mono' ? 'DM Mono, monospace' :
-                fontFamily === 'Ruwudu' ? 'Ruwudu, serif' :
-                'IBM Plex Sans Arabic, sans-serif'
-              };
+                  fontFamily === 'Cairo' ? 'Cairo, sans-serif' :
+                    fontFamily === 'Tajawal' ? 'Tajawal, sans-serif' :
+                      fontFamily === 'Almarai' ? 'Almarai, sans-serif' :
+                        fontFamily === 'Noto Sans Arabic' ? 'Noto Sans Arabic, sans-serif' :
+                          fontFamily === 'DM Mono' ? 'DM Mono, monospace' :
+                            fontFamily === 'Ruwudu' ? 'Ruwudu, serif' :
+                              'IBM Plex Sans Arabic, sans-serif'
+        };
               font-size: ${exportArabicFontSize}px;
               color: ${exportTextColor};
               text-shadow: ${textColor === 'white' ? '0 2px 10px rgba(0,0,0,0.55)' : '0 2px 10px rgba(0,0,0,0.35)'};
               direction: rtl;
               text-align: center;
               line-height: 1.6;
-            ">${currentVerse.arabic}</div>
+            ">${currentVerse.arabic}</div>`}
             <div style="
               width: ${Math.floor(width * 0.04)}px;
               height: 1px;
@@ -407,7 +443,7 @@ function App() {
           </div>
         </div>
       `;
-      
+
       exportContainer.innerHTML = canvasContent;
 
       // Wait for fonts to load
@@ -483,25 +519,26 @@ function App() {
         showTranslation={showTranslation}
         onShowTranslationChange={setShowTranslation}
         onExport={handleExport}
+        isExporting={isExporting}
       />
 
       {/* Main Stage */}
       <main className="flex-1 flex flex-col relative overflow-hidden">
         {/* Background Canvas Image */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: `url('/background-canvas.jpg')`
           }}
         />
         {/* Dark overlay - reduced at bottom */}
-        <div 
+        <div
           className="absolute inset-0"
           style={{
             background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.7) 0%, rgba(15, 23, 42, 0.7) 60%, rgba(15, 23, 42, 0.4) 100%)'
           }}
         />
-        
+
         <div className="flex-1 relative p-4 sm:p-8 overflow-visible lg:overflow-y-auto">
           <div className="relative z-10 w-full max-w-[1200px] mx-auto flex flex-col items-center justify-center gap-5 py-4">
             <CanvasPreview
@@ -513,33 +550,30 @@ function App() {
             <div className="glass-light rounded-2xl p-1.5 flex items-center gap-1 lg:sticky lg:bottom-6">
               <button
                 onClick={() => setPreviewAspectRatio('story')}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
-                  previewAspectRatio === 'story'
-                    ? 'bg-[#d4af37] text-slate-950'
-                    : 'text-slate-200 hover:bg-white/5'
-                }`}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${previewAspectRatio === 'story'
+                  ? 'bg-[#d4af37] text-slate-950'
+                  : 'text-slate-200 hover:bg-white/5'
+                  }`}
               >
                 <Smartphone className="w-4 h-4" />
                 9:16
               </button>
               <button
                 onClick={() => setPreviewAspectRatio('square')}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
-                  previewAspectRatio === 'square'
-                    ? 'bg-[#d4af37] text-slate-950'
-                    : 'text-slate-200 hover:bg-white/5'
-                }`}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${previewAspectRatio === 'square'
+                  ? 'bg-[#d4af37] text-slate-950'
+                  : 'text-slate-200 hover:bg-white/5'
+                  }`}
               >
                 <Square className="w-4 h-4" />
                 1:1
               </button>
               <button
                 onClick={() => setPreviewAspectRatio('desktop')}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
-                  previewAspectRatio === 'desktop'
-                    ? 'bg-[#d4af37] text-slate-950'
-                    : 'text-slate-200 hover:bg-white/5'
-                }`}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${previewAspectRatio === 'desktop'
+                  ? 'bg-[#d4af37] text-slate-950'
+                  : 'text-slate-200 hover:bg-white/5'
+                  }`}
               >
                 <Monitor className="w-4 h-4" />
                 16:9

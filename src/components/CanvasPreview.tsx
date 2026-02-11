@@ -1,4 +1,5 @@
-import { forwardRef } from 'react';
+import { forwardRef, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { Verse } from '../data/verses';
 import type { Pattern } from '../data/patterns';
 import type { BorderType } from '../data/borders';
@@ -16,7 +17,7 @@ export interface CanvasSettings {
   vignetteIntensity: number;
   fontFamily: 'Amiri' | 'Lateef' | 'Scheherazade' | 'Reem Kufi' | 'Noto Naskh' | 'Cairo' | 'Tajawal' | 'Almarai' | 'Noto Sans Arabic' | 'DM Mono' | 'Ruwudu' | 'IBM Plex Sans Arabic';
   fontSize: number;
-  textColor: 'gold' | 'white' | 'black';
+  textColor: 'gold' | 'white' | 'black' | 'gold-gradient';
   showTranslation: boolean;
   borderType: BorderType['id'];
 }
@@ -35,7 +36,8 @@ const aspectRatioClasses = {
 const textColorMap = {
   gold: '#d4af37',
   white: '#ffffff',
-  black: '#000000'
+  black: '#000000',
+  'gold-gradient': '#d4af37' // Fallback for borders/dividers
 };
 
 export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
@@ -73,44 +75,55 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
     };
     const currentFontFamily = fontFamilyMap[fontFamily];
     const currentTextColor = textColorMap[textColor];
+    const isGoldGradient = textColor === 'gold-gradient';
     const basePatternAlpha = Math.min(1, Math.pow(patternOpacity / 100, 0.65) * 1.25);
     const strongPatternAlpha = Math.max(0, Math.min(1, (patternOpacity - 70) / 30)) * 0.9;
 
-    return (
-      <div
-        ref={ref}
-        className={`relative ${aspectRatioClasses[aspectRatio]} overflow-hidden shadow-2xl ring-1 ring-white/10`}
-        style={{
-          backgroundColor,
-          backgroundImage: backgroundImage
-            ? `url(${backgroundImage})`
-            : backgroundMode === 'gradient' && backgroundGradient.id !== 'none'
-              ? backgroundGradient.css
-              : undefined,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      >
-        {/* Layer 1: Background (already set on parent) */}
+    // Build a key that changes when the background changes, to trigger fade-in
+    const bgKey = useMemo(() => {
+      if (backgroundImage) return `img-${backgroundImage.slice(-20)}`;
+      if (backgroundMode === 'gradient') return `grad-${backgroundGradient.id}`;
+      return `solid-${backgroundColor}`;
+    }, [backgroundImage, backgroundMode, backgroundGradient.id, backgroundColor]);
 
-        {/* Layer 2: Pattern Overlay */}
-        {pattern.id !== 'none' && (
-          <>
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                backgroundColor: patternColor,
-                WebkitMaskImage: pattern.css,
-                maskImage: pattern.css,
-                WebkitMaskSize: '120px 120px',
-                maskSize: '120px 120px',
-                WebkitMaskRepeat: 'repeat',
-                maskRepeat: 'repeat',
-                opacity: basePatternAlpha,
-                mixBlendMode: 'soft-light'
-              }}
-            />
-            {strongPatternAlpha > 0 && (
+    // Gold gradient style for text
+    const goldGradientStyle: React.CSSProperties = isGoldGradient
+      ? {
+          background: 'linear-gradient(135deg, #b8860b 0%, #d4af37 25%, #ffd700 50%, #f0e68c 70%, #d4af37 100%)',
+          backgroundSize: '200% 200%',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          animation: 'shimmer-gold 6s ease-in-out infinite',
+        }
+      : {};
+
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={bgKey}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          ref={ref}
+          className={`relative ${aspectRatioClasses[aspectRatio]} overflow-hidden shadow-2xl ring-1 ring-white/10`}
+          style={{
+            backgroundColor,
+            backgroundImage: backgroundImage
+              ? `url(${backgroundImage})`
+              : backgroundMode === 'gradient' && backgroundGradient.id !== 'none'
+                ? backgroundGradient.css
+                : undefined,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        >
+          {/* Layer 1: Background (already set on parent) */}
+
+          {/* Layer 2: Pattern Overlay */}
+          {pattern.id !== 'none' && (
+            <>
               <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
@@ -121,237 +134,238 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
                   maskSize: '120px 120px',
                   WebkitMaskRepeat: 'repeat',
                   maskRepeat: 'repeat',
-                  opacity: strongPatternAlpha,
-                  mixBlendMode: 'normal'
+                  opacity: basePatternAlpha,
+                  mixBlendMode: 'soft-light'
                 }}
               />
-            )}
-          </>
-        )}
-
-        {/* Layer 3: Vignette/Dark Overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(0,0,0,${vignetteIntensity / 100}) 100%)`,
-            boxShadow: `inset 0 0 ${100 + vignetteIntensity}px rgba(0,0,0,${vignetteIntensity / 200})`
-          }}
-        />
-
-        {/* Layer 4: Text Content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 sm:p-8 lg:p-10">
-          {/* Border Frame */}
-          {borderType !== 'none' && (
-            <>
-              {borderType === 'simple' && (
+              {strongPatternAlpha > 0 && (
                 <div
-                  className="absolute inset-8 border pointer-events-none"
-                  style={{ borderColor: currentTextColor, opacity: 0.6, borderWidth: '1px' }}
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    backgroundColor: patternColor,
+                    WebkitMaskImage: pattern.css,
+                    maskImage: pattern.css,
+                    WebkitMaskSize: '120px 120px',
+                    maskSize: '120px 120px',
+                    WebkitMaskRepeat: 'repeat',
+                    maskRepeat: 'repeat',
+                    opacity: strongPatternAlpha,
+                    mixBlendMode: 'normal'
+                  }}
                 />
-              )}
-              
-              {borderType === 'double' && (
-                <>
-                  <div
-                    className="absolute inset-8 border-2 pointer-events-none"
-                    style={{ borderColor: currentTextColor, opacity: 0.6 }}
-                  />
-                  <div
-                    className="absolute inset-9 border pointer-events-none"
-                    style={{ borderColor: currentTextColor, opacity: 0.4, borderWidth: '1px' }}
-                  />
-                </>
-              )}
-              
-              {borderType === 'ornate-corners' && (
-                <div className="absolute inset-8 pointer-events-none">
-                  {/* Main border */}
-                  <div
-                    className="absolute inset-0 border-2"
-                    style={{ borderColor: currentTextColor, opacity: 0.6 }}
-                  />
-                  {/* Ornate corners */}
-                  <div className="absolute -top-3 -left-3 w-8 h-8" style={{ borderTop: `3px solid ${currentTextColor}`, borderLeft: `3px solid ${currentTextColor}`, opacity: 0.8 }} />
-                  <div className="absolute -top-3 -right-3 w-8 h-8" style={{ borderTop: `3px solid ${currentTextColor}`, borderRight: `3px solid ${currentTextColor}`, opacity: 0.8 }} />
-                  <div className="absolute -bottom-3 -left-3 w-8 h-8" style={{ borderBottom: `3px solid ${currentTextColor}`, borderLeft: `3px solid ${currentTextColor}`, opacity: 0.8 }} />
-                  <div className="absolute -bottom-3 -right-3 w-8 h-8" style={{ borderBottom: `3px solid ${currentTextColor}`, borderRight: `3px solid ${currentTextColor}`, opacity: 0.8 }} />
-                </div>
-              )}
-              
-              {borderType === 'geometric' && (
-                <div className="absolute inset-8 pointer-events-none">
-                  {/* Main border */}
-                  <div
-                    className="absolute inset-0 border-2"
-                    style={{ borderColor: currentTextColor, opacity: 0.5 }}
-                  />
-                  {/* Geometric corners - diamond shapes */}
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: `8px solid ${currentTextColor}`, opacity: 0.7 }} />
-                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderTop: `8px solid ${currentTextColor}`, opacity: 0.7 }} />
-                  <div className="absolute top-1/2 -left-2 -translate-y-1/2 w-0 h-0" style={{ borderTop: '8px solid transparent', borderBottom: '8px solid transparent', borderRight: `8px solid ${currentTextColor}`, opacity: 0.7 }} />
-                  <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-0 h-0" style={{ borderTop: '8px solid transparent', borderBottom: '8px solid transparent', borderLeft: `8px solid ${currentTextColor}`, opacity: 0.7 }} />
-                </div>
-              )}
-              
-              {borderType === 'mosque' && (
-                <div className="absolute inset-8 pointer-events-none">
-                  {/* Main border */}
-                  <div
-                    className="absolute inset-0 border-2"
-                    style={{ borderColor: currentTextColor, opacity: 0.6 }}
-                  />
-                  {/* Mosque arch at top */}
-                  <div
-                    className="absolute -top-8 left-1/2 -translate-x-1/2 w-32 h-16"
-                    style={{
-                      borderTop: `3px solid ${currentTextColor}`,
-                      borderLeft: `3px solid ${currentTextColor}`,
-                      borderRight: `3px solid ${currentTextColor}`,
-                      borderRadius: '50% 50% 0 0 / 100% 100% 0 0',
-                      opacity: 0.7
-                    }}
-                  />
-                </div>
-              )}
-              
-              {borderType === 'andalusian' && (
-                <div className="absolute inset-8 pointer-events-none">
-                  {/* Main border */}
-                  <div
-                    className="absolute inset-0 border-2"
-                    style={{ borderColor: currentTextColor, opacity: 0.5 }}
-                  />
-                  {/* Horseshoe arches - Andalusian style */}
-                  <div className="absolute -top-6 left-1/4 -translate-x-1/2 w-16 h-10" style={{ borderTop: `2px solid ${currentTextColor}`, borderLeft: `2px solid ${currentTextColor}`, borderRight: `2px solid ${currentTextColor}`, borderRadius: '50% 50% 0 0', opacity: 0.6 }} />
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-16 h-10" style={{ borderTop: `2px solid ${currentTextColor}`, borderLeft: `2px solid ${currentTextColor}`, borderRight: `2px solid ${currentTextColor}`, borderRadius: '50% 50% 0 0', opacity: 0.6 }} />
-                  <div className="absolute -top-6 left-3/4 -translate-x-1/2 w-16 h-10" style={{ borderTop: `2px solid ${currentTextColor}`, borderLeft: `2px solid ${currentTextColor}`, borderRight: `2px solid ${currentTextColor}`, borderRadius: '50% 50% 0 0', opacity: 0.6 }} />
-                  {/* Decorative corner elements */}
-                  <div className="absolute -top-2 -left-2 w-10 h-10" style={{ borderTop: `3px solid ${currentTextColor}`, borderLeft: `3px solid ${currentTextColor}`, opacity: 0.7 }} />
-                  <div className="absolute -top-2 -right-2 w-10 h-10" style={{ borderTop: `3px solid ${currentTextColor}`, borderRight: `3px solid ${currentTextColor}`, opacity: 0.7 }} />
-                  <div className="absolute -bottom-2 -left-2 w-10 h-10" style={{ borderBottom: `3px solid ${currentTextColor}`, borderLeft: `3px solid ${currentTextColor}`, opacity: 0.7 }} />
-                  <div className="absolute -bottom-2 -right-2 w-10 h-10" style={{ borderBottom: `3px solid ${currentTextColor}`, borderRight: `3px solid ${currentTextColor}`, opacity: 0.7 }} />
-                </div>
-              )}
-              
-              {borderType === 'moroccan' && (
-                <div className="absolute inset-8 pointer-events-none">
-                  {/* Main border with Moroccan zellige style */}
-                  <div
-                    className="absolute inset-0 border-[3px]"
-                    style={{ borderColor: currentTextColor, opacity: 0.6 }}
-                  />
-                  {/* Inner border for tile effect */}
-                  <div
-                    className="absolute inset-2 border-2"
-                    style={{ borderColor: currentTextColor, opacity: 0.4 }}
-                  />
-                  {/* Diamond shapes at corners - Moroccan star pattern */}
-                  <div className="absolute -top-3 -left-3 w-6 h-6 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.8 }} />
-                  <div className="absolute -top-3 -right-3 w-6 h-6 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.8 }} />
-                  <div className="absolute -bottom-3 -left-3 w-6 h-6 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.8 }} />
-                  <div className="absolute -bottom-3 -right-3 w-6 h-6 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.8 }} />
-                  {/* Center decorations */}
-                  <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-0 h-0" style={{ borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderRight: `6px solid ${currentTextColor}`, opacity: 0.7 }} />
-                  <div className="absolute top-1/2 -right-1 -translate-y-1/2 w-0 h-0" style={{ borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: `6px solid ${currentTextColor}`, opacity: 0.7 }} />
-                </div>
-              )}
-              
-              {borderType === 'islamic-lattice' && (
-                <div className="absolute inset-8 pointer-events-none">
-                  {/* Main border */}
-                  <div
-                    className="absolute inset-0 border-2"
-                    style={{ borderColor: currentTextColor, opacity: 0.5 }}
-                  />
-                  {/* Eight-pointed star corners */}
-                  <div className="absolute -top-4 -left-4">
-                    <div className="relative w-8 h-8">
-                      <div className="absolute inset-0 rotate-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
-                      <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
-                    </div>
-                  </div>
-                  <div className="absolute -top-4 -right-4">
-                    <div className="relative w-8 h-8">
-                      <div className="absolute inset-0 rotate-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
-                      <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
-                    </div>
-                  </div>
-                  <div className="absolute -bottom-4 -left-4">
-                    <div className="relative w-8 h-8">
-                      <div className="absolute inset-0 rotate-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
-                      <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
-                    </div>
-                  </div>
-                  <div className="absolute -bottom-4 -right-4">
-                    <div className="relative w-8 h-8">
-                      <div className="absolute inset-0 rotate-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
-                      <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
-                    </div>
-                  </div>
-                  {/* Interlacing lines at midpoints */}
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-12 h-4 border-t-2" style={{ borderColor: currentTextColor, opacity: 0.6 }} />
-                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-4 border-b-2" style={{ borderColor: currentTextColor, opacity: 0.6 }} />
-                  <div className="absolute top-1/2 -left-2 -translate-y-1/2 w-4 h-12 border-l-2" style={{ borderColor: currentTextColor, opacity: 0.6 }} />
-                  <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-4 h-12 border-r-2" style={{ borderColor: currentTextColor, opacity: 0.6 }} />
-                </div>
               )}
             </>
           )}
 
-          {/* Arabic Text */}
+          {/* Layer 3: Vignette/Dark Overlay */}
           <div
-            className="text-center leading-relaxed"
+            className="absolute inset-0 pointer-events-none"
             style={{
-              fontFamily: currentFontFamily,
-              fontSize: `${fontSize}px`,
-              fontWeight: 400,
-              color: currentTextColor,
-              textShadow: textColor === 'white' ? '0 2px 8px rgba(0,0,0,0.5)' : '0 2px 8px rgba(0,0,0,0.3)',
-              direction: 'rtl'
-            }}
-          >
-            {verse.arabic}
-          </div>
-
-          {/* Divider */}
-          <div
-            className="w-16 h-px my-4 sm:my-5"
-            style={{
-              backgroundColor: currentTextColor,
-              opacity: 0.5
+              background: `radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(0,0,0,${vignetteIntensity / 100}) 100%)`,
+              boxShadow: `inset 0 0 ${100 + vignetteIntensity}px rgba(0,0,0,${vignetteIntensity / 200})`
             }}
           />
 
-          {/* Translation */}
-          {showTranslation && (
+          {/* Layer 4: Text Content */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 sm:p-8 lg:p-10">
+            {/* Border Frame */}
+            {borderType !== 'none' && (
+              <>
+                {borderType === 'simple' && (
+                  <div
+                    className="absolute inset-8 border pointer-events-none"
+                    style={{ borderColor: currentTextColor, opacity: 0.6, borderWidth: '1px' }}
+                  />
+                )}
+                
+                {borderType === 'double' && (
+                  <>
+                    <div
+                      className="absolute inset-8 border-2 pointer-events-none"
+                      style={{ borderColor: currentTextColor, opacity: 0.6 }}
+                    />
+                    <div
+                      className="absolute inset-9 border pointer-events-none"
+                      style={{ borderColor: currentTextColor, opacity: 0.4, borderWidth: '1px' }}
+                    />
+                  </>
+                )}
+                
+                {borderType === 'ornate-corners' && (
+                  <div className="absolute inset-8 pointer-events-none">
+                    <div
+                      className="absolute inset-0 border-2"
+                      style={{ borderColor: currentTextColor, opacity: 0.6 }}
+                    />
+                    <div className="absolute -top-3 -left-3 w-8 h-8" style={{ borderTop: `3px solid ${currentTextColor}`, borderLeft: `3px solid ${currentTextColor}`, opacity: 0.8 }} />
+                    <div className="absolute -top-3 -right-3 w-8 h-8" style={{ borderTop: `3px solid ${currentTextColor}`, borderRight: `3px solid ${currentTextColor}`, opacity: 0.8 }} />
+                    <div className="absolute -bottom-3 -left-3 w-8 h-8" style={{ borderBottom: `3px solid ${currentTextColor}`, borderLeft: `3px solid ${currentTextColor}`, opacity: 0.8 }} />
+                    <div className="absolute -bottom-3 -right-3 w-8 h-8" style={{ borderBottom: `3px solid ${currentTextColor}`, borderRight: `3px solid ${currentTextColor}`, opacity: 0.8 }} />
+                  </div>
+                )}
+                
+                {borderType === 'geometric' && (
+                  <div className="absolute inset-8 pointer-events-none">
+                    <div
+                      className="absolute inset-0 border-2"
+                      style={{ borderColor: currentTextColor, opacity: 0.5 }}
+                    />
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: `8px solid ${currentTextColor}`, opacity: 0.7 }} />
+                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderTop: `8px solid ${currentTextColor}`, opacity: 0.7 }} />
+                    <div className="absolute top-1/2 -left-2 -translate-y-1/2 w-0 h-0" style={{ borderTop: '8px solid transparent', borderBottom: '8px solid transparent', borderRight: `8px solid ${currentTextColor}`, opacity: 0.7 }} />
+                    <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-0 h-0" style={{ borderTop: '8px solid transparent', borderBottom: '8px solid transparent', borderLeft: `8px solid ${currentTextColor}`, opacity: 0.7 }} />
+                  </div>
+                )}
+                
+                {borderType === 'mosque' && (
+                  <div className="absolute inset-8 pointer-events-none">
+                    <div
+                      className="absolute inset-0 border-2"
+                      style={{ borderColor: currentTextColor, opacity: 0.6 }}
+                    />
+                    <div
+                      className="absolute -top-8 left-1/2 -translate-x-1/2 w-32 h-16"
+                      style={{
+                        borderTop: `3px solid ${currentTextColor}`,
+                        borderLeft: `3px solid ${currentTextColor}`,
+                        borderRight: `3px solid ${currentTextColor}`,
+                        borderRadius: '50% 50% 0 0 / 100% 100% 0 0',
+                        opacity: 0.7
+                      }}
+                    />
+                  </div>
+                )}
+                
+                {borderType === 'andalusian' && (
+                  <div className="absolute inset-8 pointer-events-none">
+                    <div
+                      className="absolute inset-0 border-2"
+                      style={{ borderColor: currentTextColor, opacity: 0.5 }}
+                    />
+                    <div className="absolute -top-6 left-1/4 -translate-x-1/2 w-16 h-10" style={{ borderTop: `2px solid ${currentTextColor}`, borderLeft: `2px solid ${currentTextColor}`, borderRight: `2px solid ${currentTextColor}`, borderRadius: '50% 50% 0 0', opacity: 0.6 }} />
+                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-16 h-10" style={{ borderTop: `2px solid ${currentTextColor}`, borderLeft: `2px solid ${currentTextColor}`, borderRight: `2px solid ${currentTextColor}`, borderRadius: '50% 50% 0 0', opacity: 0.6 }} />
+                    <div className="absolute -top-6 left-3/4 -translate-x-1/2 w-16 h-10" style={{ borderTop: `2px solid ${currentTextColor}`, borderLeft: `2px solid ${currentTextColor}`, borderRight: `2px solid ${currentTextColor}`, borderRadius: '50% 50% 0 0', opacity: 0.6 }} />
+                    <div className="absolute -top-2 -left-2 w-10 h-10" style={{ borderTop: `3px solid ${currentTextColor}`, borderLeft: `3px solid ${currentTextColor}`, opacity: 0.7 }} />
+                    <div className="absolute -top-2 -right-2 w-10 h-10" style={{ borderTop: `3px solid ${currentTextColor}`, borderRight: `3px solid ${currentTextColor}`, opacity: 0.7 }} />
+                    <div className="absolute -bottom-2 -left-2 w-10 h-10" style={{ borderBottom: `3px solid ${currentTextColor}`, borderLeft: `3px solid ${currentTextColor}`, opacity: 0.7 }} />
+                    <div className="absolute -bottom-2 -right-2 w-10 h-10" style={{ borderBottom: `3px solid ${currentTextColor}`, borderRight: `3px solid ${currentTextColor}`, opacity: 0.7 }} />
+                  </div>
+                )}
+                
+                {borderType === 'moroccan' && (
+                  <div className="absolute inset-8 pointer-events-none">
+                    <div
+                      className="absolute inset-0 border-[3px]"
+                      style={{ borderColor: currentTextColor, opacity: 0.6 }}
+                    />
+                    <div
+                      className="absolute inset-2 border-2"
+                      style={{ borderColor: currentTextColor, opacity: 0.4 }}
+                    />
+                    <div className="absolute -top-3 -left-3 w-6 h-6 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.8 }} />
+                    <div className="absolute -top-3 -right-3 w-6 h-6 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.8 }} />
+                    <div className="absolute -bottom-3 -left-3 w-6 h-6 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.8 }} />
+                    <div className="absolute -bottom-3 -right-3 w-6 h-6 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.8 }} />
+                    <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-0 h-0" style={{ borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderRight: `6px solid ${currentTextColor}`, opacity: 0.7 }} />
+                    <div className="absolute top-1/2 -right-1 -translate-y-1/2 w-0 h-0" style={{ borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: `6px solid ${currentTextColor}`, opacity: 0.7 }} />
+                  </div>
+                )}
+                
+                {borderType === 'islamic-lattice' && (
+                  <div className="absolute inset-8 pointer-events-none">
+                    <div
+                      className="absolute inset-0 border-2"
+                      style={{ borderColor: currentTextColor, opacity: 0.5 }}
+                    />
+                    <div className="absolute -top-4 -left-4">
+                      <div className="relative w-8 h-8">
+                        <div className="absolute inset-0 rotate-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                        <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                      </div>
+                    </div>
+                    <div className="absolute -top-4 -right-4">
+                      <div className="relative w-8 h-8">
+                        <div className="absolute inset-0 rotate-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                        <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                      </div>
+                    </div>
+                    <div className="absolute -bottom-4 -left-4">
+                      <div className="relative w-8 h-8">
+                        <div className="absolute inset-0 rotate-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                        <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                      </div>
+                    </div>
+                    <div className="absolute -bottom-4 -right-4">
+                      <div className="relative w-8 h-8">
+                        <div className="absolute inset-0 rotate-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                        <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.7 }} />
+                      </div>
+                    </div>
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-12 h-4 border-t-2" style={{ borderColor: currentTextColor, opacity: 0.6 }} />
+                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-4 border-b-2" style={{ borderColor: currentTextColor, opacity: 0.6 }} />
+                    <div className="absolute top-1/2 -left-2 -translate-y-1/2 w-4 h-12 border-l-2" style={{ borderColor: currentTextColor, opacity: 0.6 }} />
+                    <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-4 h-12 border-r-2" style={{ borderColor: currentTextColor, opacity: 0.6 }} />
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Arabic Text */}
             <div
-              className="text-center max-w-[80%] leading-relaxed"
+              className="text-center leading-relaxed"
               style={{
-                fontSize: `${Math.max(fontSize * 0.35, 14)}px`,
-                color: currentTextColor,
-                opacity: 0.9,
-                fontFamily: 'system-ui, sans-serif',
-                fontWeight: 300,
-                textShadow: '0 1px 4px rgba(0,0,0,0.3)'
+                fontFamily: currentFontFamily,
+                fontSize: `${fontSize}px`,
+                fontWeight: 400,
+                color: isGoldGradient ? undefined : currentTextColor,
+                textShadow: isGoldGradient ? 'none' : (textColor === 'white' ? '0 2px 8px rgba(0,0,0,0.5)' : '0 2px 8px rgba(0,0,0,0.3)'),
+                direction: 'rtl',
+                ...goldGradientStyle
               }}
             >
-              {verse.translation}
+              {verse.arabic}
             </div>
-          )}
 
-          {/* Surah Reference */}
-          <div
-            className="mt-6 text-sm tracking-wider uppercase"
-            style={{
-              color: currentTextColor,
-              opacity: 0.7,
-              fontFamily: 'system-ui, sans-serif'
-            }}
-          >
-            {verse.surah} — {verse.reference}
+            {/* Divider */}
+            <div
+              className="w-16 h-px my-4 sm:my-5"
+              style={{
+                backgroundColor: currentTextColor,
+                opacity: 0.5
+              }}
+            />
+
+            {/* Translation */}
+            {showTranslation && (
+              <div
+                className="text-center max-w-[80%] leading-relaxed"
+                style={{
+                  fontSize: `${Math.max(fontSize * 0.35, 14)}px`,
+                  color: currentTextColor,
+                  opacity: 0.9,
+                  fontFamily: 'system-ui, sans-serif',
+                  fontWeight: 300,
+                  textShadow: '0 1px 4px rgba(0,0,0,0.3)'
+                }}
+              >
+                {verse.translation}
+              </div>
+            )}
+
+            {/* Surah Reference */}
+            <div
+              className="mt-6 text-sm tracking-wider uppercase"
+              style={{
+                color: currentTextColor,
+                opacity: 0.7,
+                fontFamily: 'system-ui, sans-serif'
+              }}
+            >
+              {verse.surah} — {verse.reference}
+            </div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </AnimatePresence>
     );
   }
 );
