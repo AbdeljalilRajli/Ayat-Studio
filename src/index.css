@@ -143,29 +143,38 @@ body {
 }
 
 /* Gold gradient text */
-.text-gold-gradient {
-  background: linear-gradient(135deg, #b8860b 0%, #d4af37 25%, #ffd700 50%, #f0e68c 70%, #d4af37 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  background-size: 200% 200%;
-  animation: shimmer-gold 6s ease-in-out infinite;
-}
+
 
 /* Export button pulsate glow */
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
-  50% { box-shadow: 0 0 16px 4px rgba(212, 175, 55, 0.25); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 16px 4px rgba(212, 175, 55, 0.25);
+  }
 }
+
 .animate-pulse-glow:hover {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
 /* Subtle shimmer for metallic gold gradient */
 @keyframes shimmer-gold {
-  0% { background-position: 200% 0%; }
-  50% { background-position: 0% 200%; }
-  100% { background-position: 200% 0%; }
+  0% {
+    background-position: 200% 0%;
+  }
+
+  50% {
+    background-position: 0% 200%;
+  }
+
+  100% {
+    background-position: 200% 0%;
+  }
 }
 
 /* Pattern background sizes */

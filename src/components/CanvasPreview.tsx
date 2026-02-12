@@ -4,6 +4,7 @@ import type { Verse } from '../data/verses';
 import type { Pattern } from '../data/patterns';
 import type { BorderType } from '../data/borders';
 import type { GradientPreset } from '../data/gradients';
+import type { TextGradientPreset } from '../data/textGradients';
 
 export interface CanvasSettings {
   verse: Verse;
@@ -17,7 +18,8 @@ export interface CanvasSettings {
   vignetteIntensity: number;
   fontFamily: 'Amiri' | 'Lateef' | 'Scheherazade' | 'Reem Kufi' | 'Noto Naskh' | 'Cairo' | 'Tajawal' | 'Almarai' | 'Noto Sans Arabic' | 'DM Mono' | 'Ruwudu' | 'IBM Plex Sans Arabic';
   fontSize: number;
-  textColor: 'gold' | 'white' | 'black' | 'gold-gradient';
+  textColor: 'gold' | 'white' | 'black' | 'gradient';
+  textGradient: TextGradientPreset;
   showTranslation: boolean;
   borderType: BorderType['id'];
 }
@@ -37,7 +39,7 @@ const textColorMap = {
   gold: '#d4af37',
   white: '#ffffff',
   black: '#000000',
-  'gold-gradient': '#d4af37' // Fallback for borders/dividers
+  gradient: '#d4af37' // Fallback for borders/dividers
 };
 
 export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
@@ -55,6 +57,7 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
       fontFamily,
       fontSize,
       textColor,
+      textGradient,
       showTranslation,
       borderType
     } = settings;
@@ -75,7 +78,7 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
     };
     const currentFontFamily = fontFamilyMap[fontFamily];
     const currentTextColor = textColorMap[textColor];
-    const isGoldGradient = textColor === 'gold-gradient';
+    const isGradientText = textColor === 'gradient';
     const basePatternAlpha = Math.min(1, Math.pow(patternOpacity / 100, 0.65) * 1.25);
     const strongPatternAlpha = Math.max(0, Math.min(1, (patternOpacity - 70) / 30)) * 0.9;
 
@@ -86,16 +89,15 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
       return `solid-${backgroundColor}`;
     }, [backgroundImage, backgroundMode, backgroundGradient.id, backgroundColor]);
 
-    // Gold gradient style for text
-    const goldGradientStyle: React.CSSProperties = isGoldGradient
+    // Gradient style for text
+    const textGradientStyle: React.CSSProperties = isGradientText
       ? {
-          background: 'linear-gradient(135deg, #b8860b 0%, #d4af37 25%, #ffd700 50%, #f0e68c 70%, #d4af37 100%)',
-          backgroundSize: '200% 200%',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          animation: 'shimmer-gold 6s ease-in-out infinite',
-        }
+        backgroundImage: textGradient.css,
+        backgroundSize: '100%',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+      }
       : {};
 
     return (
@@ -177,7 +179,7 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
                     style={{ borderColor: currentTextColor, opacity: 0.6, borderWidth: '1px' }}
                   />
                 )}
-                
+
                 {borderType === 'double' && (
                   <>
                     <div
@@ -190,7 +192,7 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
                     />
                   </>
                 )}
-                
+
                 {borderType === 'ornate-corners' && (
                   <div className="absolute inset-8 pointer-events-none">
                     <div
@@ -203,7 +205,7 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
                     <div className="absolute -bottom-3 -right-3 w-8 h-8" style={{ borderBottom: `3px solid ${currentTextColor}`, borderRight: `3px solid ${currentTextColor}`, opacity: 0.8 }} />
                   </div>
                 )}
-                
+
                 {borderType === 'geometric' && (
                   <div className="absolute inset-8 pointer-events-none">
                     <div
@@ -216,7 +218,7 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
                     <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-0 h-0" style={{ borderTop: '8px solid transparent', borderBottom: '8px solid transparent', borderLeft: `8px solid ${currentTextColor}`, opacity: 0.7 }} />
                   </div>
                 )}
-                
+
                 {borderType === 'mosque' && (
                   <div className="absolute inset-8 pointer-events-none">
                     <div
@@ -235,7 +237,7 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
                     />
                   </div>
                 )}
-                
+
                 {borderType === 'andalusian' && (
                   <div className="absolute inset-8 pointer-events-none">
                     <div
@@ -251,7 +253,7 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
                     <div className="absolute -bottom-2 -right-2 w-10 h-10" style={{ borderBottom: `3px solid ${currentTextColor}`, borderRight: `3px solid ${currentTextColor}`, opacity: 0.7 }} />
                   </div>
                 )}
-                
+
                 {borderType === 'moroccan' && (
                   <div className="absolute inset-8 pointer-events-none">
                     <div
@@ -270,7 +272,7 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
                     <div className="absolute top-1/2 -right-1 -translate-y-1/2 w-0 h-0" style={{ borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: `6px solid ${currentTextColor}`, opacity: 0.7 }} />
                   </div>
                 )}
-                
+
                 {borderType === 'islamic-lattice' && (
                   <div className="absolute inset-8 pointer-events-none">
                     <div
@@ -317,10 +319,10 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
                 fontFamily: currentFontFamily,
                 fontSize: `${fontSize}px`,
                 fontWeight: 400,
-                color: isGoldGradient ? undefined : currentTextColor,
-                textShadow: isGoldGradient ? 'none' : (textColor === 'white' ? '0 2px 8px rgba(0,0,0,0.5)' : '0 2px 8px rgba(0,0,0,0.3)'),
+                color: isGradientText ? undefined : currentTextColor,
+                textShadow: isGradientText ? 'none' : (textColor === 'white' ? '0 2px 8px rgba(0,0,0,0.5)' : '0 2px 8px rgba(0,0,0,0.3)'),
                 direction: 'rtl',
-                ...goldGradientStyle
+                ...textGradientStyle
               }}
             >
               {verse.arabic}

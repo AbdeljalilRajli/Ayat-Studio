@@ -3,6 +3,7 @@ import { Upload, Download, Smartphone, Square, Monitor, Image as ImageIcon, Pale
 import type { Verse } from '../data/verses';
 import type { Pattern } from '../data/patterns';
 import type { GradientPreset } from '../data/gradients';
+import type { TextGradientPreset } from '../data/textGradients';
 import type { BorderType } from '../data/borders';
 import { borderTypes } from '../data/borders';
 import { ColorPicker } from './ColorPicker';
@@ -35,8 +36,11 @@ interface SidebarProps {
   onFontFamilyChange: (family: FontFamily) => void;
   fontSize: number;
   onFontSizeChange: (size: number) => void;
-  textColor: 'gold' | 'white' | 'black' | 'gold-gradient';
-  onTextColorChange: (color: 'gold' | 'white' | 'black' | 'gold-gradient') => void;
+  textColor: 'gold' | 'white' | 'black' | 'gradient';
+  onTextColorChange: (color: 'gold' | 'white' | 'black' | 'gradient') => void;
+  textGradientId: string;
+  onTextGradientChange: (id: string) => void;
+  textGradients: TextGradientPreset[];
   borderType: BorderType['id'];
   onBorderTypeChange: (type: BorderType['id']) => void;
   showTranslation: boolean;
@@ -97,6 +101,9 @@ export function Sidebar({
   onFontSizeChange,
   textColor,
   onTextColorChange,
+  textGradientId,
+  onTextGradientChange,
+  textGradients,
   borderType,
   onBorderTypeChange,
   showTranslation,
@@ -420,10 +427,11 @@ export function Sidebar({
             </div>
 
             {/* Text Color - now with 4 options including gold-gradient */}
-            <div className="space-y-2">
+            {/* Text Color */}
+            <div className="space-y-3">
               <label className="block text-xs text-slate-400">Text Color</label>
               <div className="grid grid-cols-4 gap-2">
-                {(['gold', 'white', 'black', 'gold-gradient'] as const).map((color) => (
+                {(['gold', 'white', 'black', 'gradient'] as const).map((color) => (
                   <button
                     key={color}
                     onClick={() => onTextColorChange(color)}
@@ -434,20 +442,43 @@ export function Sidebar({
                           ? 'bg-white text-slate-950 font-semibold'
                           : color === 'black'
                             ? 'bg-slate-950 text-white border border-slate-700'
-                            : 'text-slate-950 font-semibold overflow-hidden relative'
+                            : 'bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 text-slate-200'
                       }`}
-                    style={
-                      color === 'gold-gradient'
-                        ? {
-                          background: 'linear-gradient(135deg, #b8860b 0%, #d4af37 25%, #ffd700 50%, #f0e68c 70%, #d4af37 100%)',
-                        }
-                        : undefined
-                    }
                   >
-                    {color === 'gold-gradient' ? '✦ Metallic' : color}
+                    {color === 'gradient' ? 'Gradient' : color}
                   </button>
                 ))}
               </div>
+
+              {/* Gradient Selector - Only show when gradient is selected */}
+              {textColor === 'gradient' && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="grid grid-cols-4 gap-2 pt-2"
+                >
+                  {textGradients.map((gradient) => (
+                    <button
+                      key={gradient.id}
+                      onClick={() => onTextGradientChange(gradient.id)}
+                      className={`group relative aspect-square rounded-xl border transition-all overflow-hidden ${textGradientId === gradient.id
+                        ? 'border-[#d4af37] ring-2 ring-[#d4af37]/20 scale-105'
+                        : 'border-white/10 hover:border-white/30 hover:scale-105'
+                        }`}
+                    >
+                      <div
+                        className="absolute inset-0"
+                        style={{ background: gradient.css }}
+                      />
+                      {textGradientId === gradient.id && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                          <div className="w-1.5 h-1.5 rounded-full bg-white shadow-sm" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
             </div>
           </motion.section>
 

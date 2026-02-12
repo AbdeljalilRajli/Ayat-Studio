@@ -4,6 +4,7 @@ import { Monitor, Smartphone, Square } from 'lucide-react';
 import { verses } from './data/verses';
 import { patterns } from './data/patterns';
 import { gradients } from './data/gradients';
+import { textGradients } from './data/textGradients';
 import { CanvasPreview, type CanvasSettings } from './components/CanvasPreview';
 import { Sidebar } from './components/Sidebar';
 
@@ -22,7 +23,8 @@ function App() {
   const [vignetteIntensity, setVignetteIntensity] = useState(50);
   const [fontFamily, setFontFamily] = useState<FontFamily>('Amiri');
   const [fontSize, setFontSize] = useState(48);
-  const [textColor, setTextColor] = useState<'gold' | 'white' | 'black' | 'gold-gradient'>('gold');
+  const [textColor, setTextColor] = useState<'gold' | 'white' | 'black' | 'gradient'>('gold');
+  const [textGradientId, setTextGradientId] = useState('gold');
   const [borderType, setBorderType] = useState('ornate-corners');
   const [showTranslation, setShowTranslation] = useState(true);
   const [previewAspectRatio, setPreviewAspectRatio] = useState<'story' | 'square' | 'desktop'>('story');
@@ -49,6 +51,7 @@ function App() {
     fontFamily,
     fontSize,
     textColor,
+    textGradient: textGradients.find(g => g.id === textGradientId) || textGradients[0],
     borderType,
     showTranslation
   };
@@ -90,8 +93,8 @@ function App() {
       const exportTranslationFontSize = Math.max(Math.round(fontSize * 0.35 * exportScale), 14);
       const exportMetaFontSize = Math.round(14 * exportScale);
 
-      const exportTextColor = textColor === 'gold' || textColor === 'gold-gradient' ? '#d4af37' : textColor === 'white' ? '#ffffff' : '#000000';
-      const isGoldGradient = textColor === 'gold-gradient';
+      const exportTextColor = textColor === 'gold' ? '#d4af37' : textColor === 'white' ? '#ffffff' : textColor === 'black' ? '#000000' : '#d4af37';
+      const isGradientText = textColor === 'gradient';
       const sanitizeForStyleAttr = (value: string) => value.replaceAll('"', "'");
 
       const svgPatternToPngDataUrl = async (cssUrlValue: string, size: number, tintColor?: string) => {
@@ -354,15 +357,29 @@ function App() {
             padding: ${Math.floor(width * 0.06)}px;
           ">
             ${borderHtml}
-            ${isGoldGradient ? `
+            ${isGradientText ? `
               <svg xmlns="http://www.w3.org/2000/svg" width="100%" style="overflow: visible; direction: rtl; text-align: center;">
                 <defs>
-                  <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#b8860b"/>
-                    <stop offset="25%" style="stop-color:#d4af37"/>
-                    <stop offset="50%" style="stop-color:#ffd700"/>
-                    <stop offset="70%" style="stop-color:#f0e68c"/>
-                    <stop offset="100%" style="stop-color:#d4af37"/>
+                  <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="100%" gradientTransform="rotate(45)">
+                    ${(() => {
+            // Parse the linear-gradient CSS to extract stops
+            // This is a simplified parser assuming the format in textGradients.ts
+            const currentTextGradient = textGradients.find(g => g.id === textGradientId) || textGradients[0];
+            const GradientCss = currentTextGradient.css;
+            const matches = GradientCss.matchAll(/#([0-9a-fA-F]{3,6})\s+(\d+%)/g);
+            const stops = Array.from(matches);
+
+            if (stops.length === 0) {
+              // Fallback if regex fails - basic gold
+              return `
+                          <stop offset="0%" style="stop-color:#b8860b"/>
+                          <stop offset="50%" style="stop-color:#ffd700"/>
+                          <stop offset="100%" style="stop-color:#d4af37"/>
+                         `;
+            }
+
+            return stops.map(stop => `<stop offset="${stop[2]}" style="stop-color:#${stop[1]}"/>`).join('');
+          })()}
                   </linearGradient>
                 </defs>
                 <text
@@ -370,7 +387,7 @@ function App() {
                   y="50%"
                   dominant-baseline="central"
                   text-anchor="middle"
-                  fill="url(#goldGrad)"
+                  fill="url(#textGrad)"
                   style="
                     font-family: ${fontFamily === 'Amiri' ? 'Amiri, serif' :
             fontFamily === 'Lateef' ? 'Lateef, cursive' :
@@ -514,6 +531,9 @@ function App() {
         onFontSizeChange={setFontSize}
         textColor={textColor}
         onTextColorChange={setTextColor}
+        textGradientId={textGradientId}
+        onTextGradientChange={setTextGradientId}
+        textGradients={textGradients}
         borderType={borderType}
         onBorderTypeChange={setBorderType}
         showTranslation={showTranslation}
