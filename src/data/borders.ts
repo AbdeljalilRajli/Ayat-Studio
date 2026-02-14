@@ -49,5 +49,20 @@ export const borderTypes: BorderType[] = [
     id: 'islamic-lattice',
     name: 'Islamic Lattice',
     description: 'Eight-pointed star and interlacing geometric patterns'
+  },
+  {
+    id: 'mihrab-frame',
+    name: 'Mihrab Frame',
+    description: 'Top mihrab arch with subtle side pillar accents'
+  },
+  {
+    id: 'safavid-stars',
+    name: 'Safavid Stars',
+    description: 'Double frame with eight-pointed star medallions'
+  },
+  {
+    id: 'crescent-chain',
+    name: 'Crescent Chain',
+    description: 'Linked crescents and center medallion ornaments'
   }
 ];

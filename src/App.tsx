@@ -309,6 +309,73 @@ function App() {
           `;
         }
 
+        if (borderType === 'mihrab-frame') {
+          const archW = Math.floor(width * 0.11);
+          const archH = Math.floor(width * 0.055);
+          const pillarTop = Math.floor(height * 0.09);
+          const pillarHeight = Math.floor(height * 0.1);
+          return `
+            <div style="position:absolute; inset:${inset}px; pointer-events:none;">
+              <div style="position:absolute; inset:0; border:2px solid ${exportTextColor}; opacity:0.55;"></div>
+              <div style="position:absolute; inset:${Math.floor(width * 0.004)}px; border:1px solid ${exportTextColor}; opacity:0.3;"></div>
+              <div style="position:absolute; top:${-Math.floor(archH * 0.55)}px; left:50%; transform:translateX(-50%); width:${archW}px; height:${archH}px; border-top:3px solid ${exportTextColor}; border-left:3px solid ${exportTextColor}; border-right:3px solid ${exportTextColor}; border-radius:50% 50% 0 0 / 100% 100% 0 0; opacity:0.75;"></div>
+              <div style="position:absolute; top:${pillarTop}px; left:-2px; width:${Math.max(2, Math.floor(width * 0.002))}px; height:${pillarHeight}px; background:${exportTextColor}; opacity:0.55;"></div>
+              <div style="position:absolute; top:${pillarTop}px; right:-2px; width:${Math.max(2, Math.floor(width * 0.002))}px; height:${pillarHeight}px; background:${exportTextColor}; opacity:0.55;"></div>
+            </div>
+          `;
+        }
+
+        if (borderType === 'safavid-stars') {
+          const star = Math.floor(width * 0.02);
+          return `
+            <div style="position:absolute; inset:${inset}px; pointer-events:none;">
+              <div style="position:absolute; inset:0; border:3px solid ${exportTextColor}; opacity:0.55;"></div>
+              <div style="position:absolute; inset:${Math.floor(width * 0.007)}px; border:1px solid ${exportTextColor}; opacity:0.28;"></div>
+
+              <div style="position:absolute; top:${-star}px; left:50%; transform:translateX(-50%); width:${star * 2}px; height:${star * 2}px;">
+                <div style="position:absolute; inset:0; border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+                <div style="position:absolute; inset:0; transform:rotate(45deg); border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+              </div>
+              <div style="position:absolute; bottom:${-star}px; left:50%; transform:translateX(-50%); width:${star * 2}px; height:${star * 2}px;">
+                <div style="position:absolute; inset:0; border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+                <div style="position:absolute; inset:0; transform:rotate(45deg); border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+              </div>
+              <div style="position:absolute; top:50%; left:${-star}px; transform:translateY(-50%); width:${star * 2}px; height:${star * 2}px;">
+                <div style="position:absolute; inset:0; border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+                <div style="position:absolute; inset:0; transform:rotate(45deg); border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+              </div>
+              <div style="position:absolute; top:50%; right:${-star}px; transform:translateY(-50%); width:${star * 2}px; height:${star * 2}px;">
+                <div style="position:absolute; inset:0; border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+                <div style="position:absolute; inset:0; transform:rotate(45deg); border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+              </div>
+            </div>
+          `;
+        }
+
+        if (borderType === 'crescent-chain') {
+          const crescent = Math.floor(width * 0.013);
+          const crescentDia = crescent * 2;
+          const crescentOffset = Math.max(1, Math.floor(crescent * 0.4));
+          return `
+            <div style="position:absolute; inset:${inset}px; pointer-events:none;">
+              <div style="position:absolute; inset:0; border:2px solid ${exportTextColor}; opacity:0.52;"></div>
+              <div style="position:absolute; inset:${Math.floor(width * 0.004)}px; border:1px solid ${exportTextColor}; opacity:0.28;"></div>
+
+              <div style="position:absolute; top:${-crescent}px; left:50%; transform:translateX(-50%); width:${crescentDia}px; height:${crescentDia}px; border-radius:50%; border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+              <div style="position:absolute; top:${-crescent}px; left:50%; transform:translateX(calc(-50% + ${crescentOffset}px)); width:${crescentDia}px; height:${crescentDia}px; border-radius:50%; border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+
+              <div style="position:absolute; bottom:${-crescent}px; left:50%; transform:translateX(-50%); width:${crescentDia}px; height:${crescentDia}px; border-radius:50%; border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+              <div style="position:absolute; bottom:${-crescent}px; left:50%; transform:translateX(calc(-50% - ${crescentOffset}px)); width:${crescentDia}px; height:${crescentDia}px; border-radius:50%; border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+
+              <div style="position:absolute; top:50%; left:${-crescent}px; transform:translateY(-50%); width:${crescentDia}px; height:${crescentDia}px; border-radius:50%; border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+              <div style="position:absolute; top:50%; left:${-crescent}px; transform:translateY(calc(-50% + ${crescentOffset}px)); width:${crescentDia}px; height:${crescentDia}px; border-radius:50%; border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+
+              <div style="position:absolute; top:50%; right:${-crescent}px; transform:translateY(-50%); width:${crescentDia}px; height:${crescentDia}px; border-radius:50%; border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+              <div style="position:absolute; top:50%; right:${-crescent}px; transform:translateY(calc(-50% - ${crescentOffset}px)); width:${crescentDia}px; height:${crescentDia}px; border-radius:50%; border:2px solid ${exportTextColor}; opacity:0.75;"></div>
+            </div>
+          `;
+        }
+
         return `
           <div style="
             position: absolute;

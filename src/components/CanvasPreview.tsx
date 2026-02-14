@@ -309,6 +309,89 @@ export const CanvasPreview = forwardRef<HTMLDivElement, CanvasPreviewProps>(
                     <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-4 h-12 border-r-2" style={{ borderColor: currentTextColor, opacity: 0.6 }} />
                   </div>
                 )}
+
+                {borderType === 'mihrab-frame' && (
+                  <div className="absolute inset-8 pointer-events-none">
+                    <div
+                      className="absolute inset-0 border-2"
+                      style={{ borderColor: currentTextColor, opacity: 0.55 }}
+                    />
+                    <div
+                      className="absolute inset-2 border"
+                      style={{ borderColor: currentTextColor, opacity: 0.3 }}
+                    />
+                    <div
+                      className="absolute -top-8 left-1/2 -translate-x-1/2 w-28 h-14"
+                      style={{
+                        borderTop: `3px solid ${currentTextColor}`,
+                        borderLeft: `3px solid ${currentTextColor}`,
+                        borderRight: `3px solid ${currentTextColor}`,
+                        borderRadius: '50% 50% 0 0 / 100% 100% 0 0',
+                        opacity: 0.75
+                      }}
+                    />
+                    <div className="absolute top-8 -left-1 w-2 h-20" style={{ backgroundColor: currentTextColor, opacity: 0.55 }} />
+                    <div className="absolute top-8 -right-1 w-2 h-20" style={{ backgroundColor: currentTextColor, opacity: 0.55 }} />
+                  </div>
+                )}
+
+                {borderType === 'safavid-stars' && (
+                  <div className="absolute inset-8 pointer-events-none">
+                    <div
+                      className="absolute inset-0 border-[3px]"
+                      style={{ borderColor: currentTextColor, opacity: 0.55 }}
+                    />
+                    <div
+                      className="absolute inset-3 border"
+                      style={{ borderColor: currentTextColor, opacity: 0.28 }}
+                    />
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                      <div className="relative w-8 h-8">
+                        <div className="absolute inset-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                        <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                      </div>
+                    </div>
+                    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2">
+                      <div className="relative w-8 h-8">
+                        <div className="absolute inset-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                        <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                      </div>
+                    </div>
+                    <div className="absolute top-1/2 -left-4 -translate-y-1/2">
+                      <div className="relative w-8 h-8">
+                        <div className="absolute inset-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                        <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                      </div>
+                    </div>
+                    <div className="absolute top-1/2 -right-4 -translate-y-1/2">
+                      <div className="relative w-8 h-8">
+                        <div className="absolute inset-0" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                        <div className="absolute inset-0 rotate-45" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {borderType === 'crescent-chain' && (
+                  <div className="absolute inset-8 pointer-events-none">
+                    <div
+                      className="absolute inset-0 border-2"
+                      style={{ borderColor: currentTextColor, opacity: 0.52 }}
+                    />
+                    <div
+                      className="absolute inset-2 border"
+                      style={{ borderColor: currentTextColor, opacity: 0.28 }}
+                    />
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 translate-x-1 w-5 h-5 rounded-full" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 -translate-x-1 w-5 h-5 rounded-full" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                    <div className="absolute top-1/2 -left-4 -translate-y-1/2 w-5 h-5 rounded-full" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                    <div className="absolute top-1/2 -left-4 -translate-y-1/2 translate-y-1 w-5 h-5 rounded-full" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                    <div className="absolute top-1/2 -right-4 -translate-y-1/2 w-5 h-5 rounded-full" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                    <div className="absolute top-1/2 -right-4 -translate-y-1/2 -translate-y-1 w-5 h-5 rounded-full" style={{ border: `2px solid ${currentTextColor}`, opacity: 0.75 }} />
+                  </div>
+                )}
               </>
             )}
 
