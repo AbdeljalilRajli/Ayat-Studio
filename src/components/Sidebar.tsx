@@ -572,9 +572,9 @@ export function Sidebar({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6, ease: 'easeOut' }}
-          className="px-5 py-5 border-t border-[#d4af37]/15 bg-white/[0.03] backdrop-blur-xl"
+          className="px-5 py-3 border-t border-[#d4af37]/15 bg-white/[0.03] backdrop-blur-xl"
         >
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm font-semibold text-[#d4af37] flex items-center gap-2">
               <Download className="w-4 h-4" />
               Export
@@ -591,9 +591,9 @@ export function Sidebar({
                 key={ratio}
                 onClick={() => !isExporting && onExport(ratio)}
                 disabled={isExporting}
-                whileHover={isExporting ? {} : { scale: 1.05 }}
+                whileHover={isExporting ? {} : { scale: 1.03 }}
                 whileTap={isExporting ? {} : { scale: 0.97 }}
-                className={`group flex flex-col items-center gap-1.5 p-3 rounded-2xl border transition-all ${isExporting
+                className={`group flex flex-col items-center gap-1 p-2 rounded-2xl border transition-all ${isExporting
                   ? 'bg-slate-900/50 border-white/5 opacity-70 cursor-not-allowed'
                   : 'bg-slate-900/35 border-white/5 hover:border-[#d4af37]/40 hover:bg-[#d4af37]/10 animate-pulse-glow'
                   }`}
@@ -603,10 +603,10 @@ export function Sidebar({
                 ) : (
                   <Icon className="w-4 h-4 text-[#d4af37] group-hover:scale-110 transition-transform" />
                 )}
-                <span className="text-xs text-slate-200">
+                <span className="text-[11px] text-slate-200 leading-tight">
                   {isExporting ? 'Exporting...' : label}
                 </span>
-                {!isExporting && <span className="text-[10px] text-slate-500">{sub}</span>}
+                {!isExporting && <span className="text-[10px] text-slate-500 leading-tight">{sub}</span>}
               </motion.button>
             ))}
           </div>
