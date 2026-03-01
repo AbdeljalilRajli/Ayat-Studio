@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import html2canvas from 'html2canvas';
 import { Monitor, Smartphone, Square } from 'lucide-react';
-import { verses } from './data/verses';
+import { verses, type Verse } from './data/verses';
 import { patterns } from './data/patterns';
 import { gradients } from './data/gradients';
 import { textGradients } from './data/textGradients';
@@ -13,6 +13,13 @@ type FontFamily = 'Amiri' | 'Lateef' | 'Scheherazade' | 'Reem Kufi' | 'Noto Nask
 function App() {
   // State for all customization options
   const [selectedVerseId, setSelectedVerseId] = useState(verses[0].id);
+  const [customVerse, setCustomVerse] = useState<Verse>({
+    id: 'custom',
+    arabic: '',
+    translation: '',
+    surah: 'Custom',
+    reference: ''
+  });
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [backgroundMode, setBackgroundMode] = useState<'solid' | 'gradient'>('solid');
   const [backgroundColor, setBackgroundColor] = useState('#064e3b');
@@ -34,7 +41,9 @@ function App() {
   const canvasRef = useRef<HTMLDivElement>(null);
 
   // Get current settings
-  const currentVerse = verses.find(v => v.id === selectedVerseId) || verses[0];
+  const currentVerse = selectedVerseId === 'custom'
+    ? customVerse
+    : (verses.find(v => v.id === selectedVerseId) || verses[0]);
   const currentPattern = patterns.find(p => p.id === selectedPatternId) || patterns[0];
   const currentGradient = gradients.find(g => g.id === selectedGradientId) || gradients[0];
 
@@ -551,7 +560,9 @@ function App() {
       // Convert to image and download
       const image = canvas.toDataURL('image/png', 1.0);
       const link = document.createElement('a');
-      link.download = `quran-wallpaper-${ratio}-${currentVerse.surah}-${currentVerse.reference.replace(':', '-')}.png`;
+      const safeSurah = (currentVerse.surah || 'Custom').replace(/\s+/g, '-');
+      const safeRef = (currentVerse.reference || '').replace(':', '-');
+      link.download = `quran-wallpaper-${ratio}-${safeSurah}${safeRef ? `-${safeRef}` : ''}.png`;
       link.href = image;
       document.body.appendChild(link);
       link.click();
@@ -576,6 +587,8 @@ function App() {
         gradients={gradients}
         selectedVerseId={selectedVerseId}
         onSelectVerse={setSelectedVerseId}
+        customVerse={customVerse}
+        onCustomVerseChange={setCustomVerse}
         backgroundImage={backgroundImage}
         onBackgroundImageChange={setBackgroundImage}
         backgroundMode={backgroundMode}

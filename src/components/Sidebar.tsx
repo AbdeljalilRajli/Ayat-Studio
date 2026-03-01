@@ -16,6 +16,8 @@ interface SidebarProps {
   gradients: GradientPreset[];
   selectedVerseId: string;
   onSelectVerse: (id: string) => void;
+  customVerse: Verse;
+  onCustomVerseChange: (verse: Verse) => void;
   backgroundImage: string | null;
   onBackgroundImageChange: (image: string | null) => void;
   backgroundMode: 'solid' | 'gradient';
@@ -79,6 +81,8 @@ export function Sidebar({
   gradients,
   selectedVerseId,
   onSelectVerse,
+  customVerse,
+  onCustomVerseChange,
   backgroundImage,
   onBackgroundImageChange,
   backgroundMode,
@@ -111,6 +115,10 @@ export function Sidebar({
   onExport,
   isExporting
 }: SidebarProps) {
+  const selectedVerse = selectedVerseId === 'custom'
+    ? customVerse
+    : (verses.find(v => v.id === selectedVerseId) || verses[0]);
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -182,18 +190,63 @@ export function Sidebar({
               onChange={(e) => onSelectVerse(e.target.value)}
               className="w-full px-3 py-2.5 rounded-xl bg-slate-950/40 border border-[#d4af37]/25 text-sm text-white focus:border-[#d4af37]/70 focus:outline-none focus:ring-2 focus:ring-[#d4af37]/15 transition-colors"
             >
+              <option value="custom">Custom</option>
               {verses.map((verse) => (
                 <option key={verse.id} value={verse.id}>
                   {verse.surah} ({verse.reference})
                 </option>
               ))}
             </select>
+
+            {selectedVerseId === 'custom' && (
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <label className="block text-xs text-slate-400">Arabic</label>
+                  <textarea
+                    value={customVerse.arabic}
+                    onChange={(e) => onCustomVerseChange({ ...customVerse, arabic: e.target.value })}
+                    rows={3}
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-950/40 border border-[#d4af37]/25 text-sm text-white focus:border-[#d4af37]/70 focus:outline-none focus:ring-2 focus:ring-[#d4af37]/15 transition-colors resize-none"
+                    style={{ direction: 'rtl' }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-xs text-slate-400">Translation</label>
+                  <textarea
+                    value={customVerse.translation}
+                    onChange={(e) => onCustomVerseChange({ ...customVerse, translation: e.target.value })}
+                    rows={2}
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-950/40 border border-[#d4af37]/25 text-sm text-white focus:border-[#d4af37]/70 focus:outline-none focus:ring-2 focus:ring-[#d4af37]/15 transition-colors resize-none"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-2">
+                    <label className="block text-xs text-slate-400">Surah / Label</label>
+                    <input
+                      value={customVerse.surah}
+                      onChange={(e) => onCustomVerseChange({ ...customVerse, surah: e.target.value })}
+                      className="w-full px-3 py-2.5 rounded-xl bg-slate-950/40 border border-[#d4af37]/25 text-sm text-white focus:border-[#d4af37]/70 focus:outline-none focus:ring-2 focus:ring-[#d4af37]/15 transition-colors"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-xs text-slate-400">Reference</label>
+                    <input
+                      value={customVerse.reference}
+                      onChange={(e) => onCustomVerseChange({ ...customVerse, reference: e.target.value })}
+                      className="w-full px-3 py-2.5 rounded-xl bg-slate-950/40 border border-[#d4af37]/25 text-sm text-white focus:border-[#d4af37]/70 focus:outline-none focus:ring-2 focus:ring-[#d4af37]/15 transition-colors"
+                      placeholder="e.g. 2:255"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-950/50 to-slate-900/30 border border-[#d4af37]/10">
               <p className="font-amiri text-right text-[22px] leading-relaxed mb-2 text-[#d4af37]" style={{ direction: 'rtl' }}>
-                {verses.find(v => v.id === selectedVerseId)?.arabic.slice(0, 56)}...
+                {selectedVerse.arabic ? `${selectedVerse.arabic.slice(0, 56)}${selectedVerse.arabic.length > 56 ? '...' : ''}` : '—'}
               </p>
               <p className="text-xs text-slate-300/90 leading-relaxed">
-                {verses.find(v => v.id === selectedVerseId)?.translation.slice(0, 80)}...
+                {selectedVerse.translation ? `${selectedVerse.translation.slice(0, 80)}${selectedVerse.translation.length > 80 ? '...' : ''}` : '—'}
               </p>
             </div>
           </motion.section>
