@@ -39,5 +39,10 @@ export const textGradients: TextGradientPreset[] = [
         id: 'ocean',
         name: 'Ocean',
         css: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%)'
+    },
+    {
+        id: 'saffron',
+        name: 'Saffron',
+        css: 'linear-gradient(135deg, #92400e 0%, #f59e0b 35%, #fde68a 65%, #d97706 100%)'
     }
 ];
